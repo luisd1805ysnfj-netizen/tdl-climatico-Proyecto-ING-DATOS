@@ -136,7 +136,7 @@ def imputar(df):
     df = df.sort_values(["municipio", "fecha"]).reset_index(drop=True).copy()
     for v in cfg.VARIABLES:
         df[f"{v}_imputado"] = False
-    for _, idx in df.groupby("municipio").groups.items():
+    for idx in df.groupby("municipio").groups.values():
         for v in ["tmax_c", "tmin_c", "viento_max_kmh", "precip_mm"]:  # lluvia al final
             g = df.loc[idx]
             if g[v].isna().all() or not g[v].isna().any():

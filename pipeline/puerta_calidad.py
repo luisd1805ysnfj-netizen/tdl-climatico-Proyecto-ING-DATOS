@@ -110,9 +110,9 @@ def aplicar_puerta(df, hoy=None):
     ).reset_index(drop=True)
 
     reporte = {
-        "registros_recibidos": int(len(df)),
-        "registros_aprobados": int(len(aprobados)),
-        "registros_en_cuarentena": int(len(cuarentena)),
+        "registros_recibidos": len(df),
+        "registros_aprobados": len(aprobados),
+        "registros_en_cuarentena": len(cuarentena),
         "pct_rechazo": round(100 * len(cuarentena) / max(len(df), 1), 3),
         "rechazos_por_regla": (fallos["regla"].value_counts().to_dict() if len(fallos) else {}),
     }

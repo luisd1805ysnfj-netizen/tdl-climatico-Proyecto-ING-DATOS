@@ -61,16 +61,16 @@ def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None,
 
     reporte = {
         "ejecutado": datetime.now().isoformat(timespec="seconds"),
-        "bronce_registros": int(len(crudo)),
-        "duplicados_captura": int(len(duplicados)),
+        "bronce_registros": len(crudo),
+        "duplicados_captura": len(duplicados),
         "puerta": rep_puerta,
-        "cuarentena_total": int(len(cuarentena)),
+        "cuarentena_total": len(cuarentena),
         "faltantes": diag.to_dict(orient="records"),
         "imputados": {v: int(plata[f"{v}_imputado"].sum()) for v in cfg.VARIABLES},
         "atipicos": {c: int(plata[c].sum()) for c in plata.columns if c.startswith("atipico_")},
-        "plata_filas": int(len(plata)),
-        "oro_diario_filas": int(len(diario)),
-        "oro_mensual_filas": int(len(mensual)),
+        "plata_filas": len(plata),
+        "oro_diario_filas": len(diario),
+        "oro_mensual_filas": len(mensual),
         "reduccion_pct": round(100 * (1 - len(mensual) / len(diario)), 2),
     }
     (dir_plata / "reporte_puerta_calidad.json").write_text(

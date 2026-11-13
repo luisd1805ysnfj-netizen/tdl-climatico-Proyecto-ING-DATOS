@@ -22,6 +22,11 @@ COORDS = {"lat": 19.2433, "lon": -103.7250}
 INICIO, FIN = date(2026, 11, 1), date(2026, 11, 7)
 
 
+def leer_csv(ruta):
+    with open(ruta, encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(f))
+
+
 def respuesta_real():
     return json.loads(FIXTURE.read_text(encoding="utf-8"))
 
@@ -162,7 +167,7 @@ def test_captura_completa_guarda_archivos_y_bitacora(tmp_path):
     assert nombres == ["clima_historico_colima_20261109.json",
                        "clima_historico_manzanillo_20261109.json",
                        "clima_historico_tecoman_20261109.json"]
-    filas = list(csv.DictReader(open(tmp_path / "bitacora.csv", encoding="utf-8")))
+    filas = leer_csv(tmp_path / "bitacora.csv")
     assert len(filas) == 3 and all(f["exito"] == "True" for f in filas)
     # ventana: termina 2 días antes de hoy y cubre 7 días
     assert s.peticiones[0]["params"]["end_date"] == "2026-11-07"
@@ -186,7 +191,7 @@ def test_si_un_municipio_falla_se_registra_y_no_se_guarda_basura(tmp_path):
     assert [r["municipio"] for r in fallidos] == ["colima"]
     guardados = list((tmp_path / "b").glob("*.json"))
     assert len(guardados) == len(res) - len(fallidos)
-    filas = list(csv.DictReader(open(tmp_path / "bit.csv", encoding="utf-8")))
+    filas = leer_csv(tmp_path / "bit.csv")
     assert len(filas) == 3 and any(f["exito"] == "False" and f["error"] for f in filas)
     assert not list((tmp_path / "b").glob("*.tmp"))
 

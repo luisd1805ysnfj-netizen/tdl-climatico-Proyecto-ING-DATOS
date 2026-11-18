@@ -1,15 +1,15 @@
 {
-  "ejecutado": "2026-11-17T22:00:23",
-  "bronce_registros": 3348,
-  "duplicados_captura": 81,
+  "ejecutado": "2026-11-18T21:42:19",
+  "bronce_registros": 3369,
+  "duplicados_captura": 99,
   "puerta": {
-    "registros_recibidos": 3267,
-    "registros_aprobados": 3267,
+    "registros_recibidos": 3270,
+    "registros_aprobados": 3270,
     "registros_en_cuarentena": 0,
     "pct_rechazo": 0.0,
     "rechazos_por_regla": {}
   },
-  "cuarentena_total": 81,
+  "cuarentena_total": 99,
   "faltantes": [
     {
       "variable": "tmax_c",
@@ -47,15 +47,15 @@
     "viento_max_kmh": 0
   },
   "atipicos": {
-    "atipico_tmax_c": 30,
+    "atipico_tmax_c": 31,
     "atipico_tmin_c": 63,
     "atipico_viento_max_kmh": 66,
     "atipico_precip_mm": 61,
     "atipico_multivariado": 33,
     "atipico_cualquiera": 197
   },
-  "plata_filas": 3267,
-  "oro_diario_filas": 3267,
+  "plata_filas": 3270,
+  "oro_diario_filas": 3270,
   "oro_mensual_filas": 111,
-  "reduccion_pct": 96.6
+  "reduccion_pct": 96.61
 }

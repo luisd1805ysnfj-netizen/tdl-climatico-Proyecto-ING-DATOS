@@ -32,3 +32,6 @@ timestamp_utc,municipio,exito,http_status,filas,intentos,duracion_s,error
 2026-11-22T20:34:24+00:00,tecoman,True,200,7,1,0.69,
 2026-11-22T20:34:24+00:00,colima,True,200,7,1,0.16,
 2026-11-22T20:34:24+00:00,manzanillo,True,200,7,1,0.16,
+2026-11-24T01:28:15+00:00,tecoman,True,200,7,1,0.6,
+2026-11-24T01:28:15+00:00,colima,True,200,7,1,0.1,
+2026-11-24T01:28:15+00:00,manzanillo,True,200,7,1,0.1,

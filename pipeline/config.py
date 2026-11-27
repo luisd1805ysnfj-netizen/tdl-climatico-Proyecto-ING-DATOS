@@ -69,3 +69,13 @@ PERFIL_SMN = {
     "valores_nulos": ["Nulo", "NULO", "S/D", "-", ""],
     "encoding": "latin-1",
 }
+
+# --- Fuente especializada geoespacial: OpenStreetMap (Overpass) ---
+OSM_ENDPOINTS = ["https://overpass-api.de/api/interpreter",
+                 "https://overpass.kumi.systems/api/interpreter"]  # respaldo si el primero se satura
+OSM_RADIO_M = 10_000                       # círculo de análisis alrededor de cada punto de la malla de clima
+OSM_USOS_AGRICOLAS = ["farmland", "orchard", "plantation", "vineyard", "greenhouse_horticulture"]
+# Lista BLANCA de etiquetas que se guardan en bronce. Todo lo demás (name, operator, owner,
+# contact:*, phone, email, addr:* ...) puede identificar a una persona y se elimina ANTES de guardar.
+OSM_ETIQUETAS_PERMITIDAS = ["landuse", "crop", "trees", "produce", "orchard", "plant", "irrigation"]
+CRS_PROYECTADO = "EPSG:32613"              # WGS 84 / UTM zona 13N: metros, correcto para Colima

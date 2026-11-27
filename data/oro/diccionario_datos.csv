@@ -13,8 +13,14 @@ dif_<variable>,diaria,decimal,unidad de la variable,Discrepancia absoluta entre 
 fila_agregada,diaria,booleano,,True si el día no llegó en bronce y se creó como faltante.
 lat_grid / lon_grid,diaria,decimal,grados,Coordenadas REALES de la celda de malla usada por la fuente.
 elevacion_m,diaria,decimal,m,Elevación de la celda de malla.
-archivo_origen,diaria,texto,,Archivo de bronce del que salió el registro (linaje).
-fecha_captura,diaria,fecha,,Día en que se capturó el archivo de origen.
+archivo_origen,diaria,texto,,Archivo de bronce de la fuente principal del registro (linaje).
+fecha_captura,diaria,fecha,,FECHA DE INGESTA: día en que se capturó el archivo de origen a bronce.
+id_registro,diaria,texto,,Identificador estable del registro: municipio|AAAA-MM-DD.
+origen_<variable>,diaria,texto,,"LINAJE por valor: 'archivo|huella12|fila' en bronce, o IMPUTADO:<método>, o SIN_DATO."
+bronce_sha256 / bronce_fila / bronce_ref,diaria,texto,,"Huella SHA-256 del archivo de bronce, posición del registro dentro de él y referencia compuesta."
+area_agricola_ha,diaria,decimal,ha,Superficie agrícola (OSM) dentro del radio del punto de clima; atributo fijo por municipio.
+pct_area_agricola,diaria,decimal,%,Porcentaje del círculo de análisis cubierto por uso agrícola (OSM).
+radio_agricola_km,diaria,decimal,km,Radio del círculo de análisis alrededor del punto de la malla de clima.
 z_robusto_<variable>,diaria,decimal,,Puntaje z modificado de la anomalía (mediana/MAD).
 atipico_<variable>,diaria,booleano,,Marca de valor atípico por variable (se conserva el dato).
 atipico_multivariado,diaria,booleano,,Marcado por Isolation Forest (combinación rara de variables).
@@ -38,3 +44,6 @@ precip_total_mm,mensual,decimal,mm,Lluvia acumulada del mes.
 dias_lluvia,mensual,entero,días,Días con precip_mm >= 1.
 viento_medio / viento_max,mensual,decimal,km/h,Media y máximo mensual del viento máximo diario.
 n_atipicos,mensual,entero,días,Días marcados como atípicos en el mes.
+primer_dia / ultimo_dia,mensual,fecha,,LINAJE mensual: cada fila agrega los registros diarios (id_registro) de ese municipio entre estas fechas.
+ultima_ingesta,mensual,fecha,,Fecha de captura más reciente entre los días agregados.
+n_dias_imputados,mensual,entero,días,Días del mes con al menos una variable imputada (no observada).

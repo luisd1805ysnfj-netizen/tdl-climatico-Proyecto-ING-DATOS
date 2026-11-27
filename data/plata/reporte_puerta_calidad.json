@@ -1,5 +1,5 @@
 {
-  "ejecutado": "2026-11-26T22:47:10",
+  "ejecutado": "2026-11-26T19:56:46",
   "bronce_registros": 3495,
   "duplicados_captura": 201,
   "puerta": {
@@ -57,5 +57,14 @@
   "plata_filas": 3294,
   "oro_diario_filas": 3294,
   "oro_mensual_filas": 111,
-  "reduccion_pct": 96.63
+  "reduccion_pct": 96.63,
+  "linaje": {
+    "valores_revisados": 13176,
+    "trazables": 13176,
+    "imputados": 0,
+    "sin_dato": 0,
+    "fallos": 0,
+    "pct_trazable_u_origen_declarado": 100.0
+  },
+  "osm": null
 }

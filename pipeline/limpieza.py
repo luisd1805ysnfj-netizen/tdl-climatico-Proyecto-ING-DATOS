@@ -265,6 +265,7 @@ def agregar_jerarquias(df):
 # --------------------------------------------------------------------- reducción
 def reducir_mensual(df):
     """Reducción por agregación: diario -> mensual, conservando los extremos."""
+    df = df.assign(alguna_imputada=df[[f"{v}_imputado" for v in cfg.VARIABLES]].any(axis=1))
     g = df.groupby(["municipio", "anio_mes"], sort=True)
     m = g.agg(
         n_dias=("fecha", "size"),
@@ -274,7 +275,12 @@ def reducir_mensual(df):
         dias_lluvia=("dia_lluvioso", "sum"),
         viento_medio=("viento_max_kmh", "mean"), viento_max=("viento_max_kmh", "max"),
         n_atipicos=("atipico_cualquiera", "sum"),
-    ).round(3).reset_index()
+        primer_dia=("fecha", "min"), ultimo_dia=("fecha", "max"),
+        ultima_ingesta=("fecha_captura", "max"),
+        n_dias_imputados=("alguna_imputada", "sum"),
+    ).reset_index()
+    numericas = m.select_dtypes("number").columns
+    m[numericas] = m[numericas].round(3)
     return m
 
 

@@ -4,8 +4,10 @@
 
 Uso:  python -m pipeline.run_pipeline
 """
+import importlib.util
 import json
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 
@@ -16,7 +18,26 @@ from . import oro
 from . import puerta_calidad as puerta
 
 
-def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None, verbose=True):
+def _contexto_agricola(dir_bronce, dir_plata, dir_oro, dir_cuarentena, dir_tablero, log):
+    """Fuente especializada (OpenStreetMap): se integra si hay capturas OSM en bronce."""
+    carpeta = Path(dir_bronce or cfg.DIR_BRONCE)
+    if not list(carpeta.glob("osm_agricola_*.json")):
+        log("[osm] sin archivos osm_agricola_* en bronce: capa agrícola omitida")
+        return None
+    if importlib.util.find_spec("geopandas") is None:
+        log("[osm] ADVERTENCIA: geopandas no está instalado; capa agrícola omitida (pip install -r requirements.txt)")
+        return None
+    from . import geoespacial, mapa
+
+    res = geoespacial.procesar(dir_bronce, dir_plata, dir_oro, dir_cuarentena, log=log)
+    ruta = mapa.construir_mapa(res["parcelas"], res["contexto"], res["centros"],
+                               Path(dir_tablero or cfg.RAIZ / "tablero") / "mapa_agricola.html")
+    log(f"[osm] mapa escrito en {ruta}")
+    return res
+
+
+def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None, verbose=True,
+             dir_tablero=None):
     dir_plata = dir_plata or cfg.DIR_PLATA
     dir_oro = dir_oro or cfg.DIR_ORO
     dir_cuarentena = dir_cuarentena or cfg.DIR_CUARENTENA
@@ -49,15 +70,32 @@ def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None,
     plata.to_csv(dir_plata / "clima_plata.csv", index=False, encoding="utf-8")
     log(f"[plata] {len(plata)} filas · {int(plata['atipico_cualquiera'].sum())} marcadas como atípicas")
 
-    # 4) Oro: escalado, discretización, jerarquías y reducción
+    # 4) Fuente especializada geoespacial (OpenStreetMap), si hay capturas en bronce
+    osm = _contexto_agricola(dir_bronce, dir_plata, dir_oro, dir_cuarentena, dir_tablero, log)
+
+    # 5) Oro: escalado, discretización, jerarquías, linaje y reducción
     params = lim.ajustar_escalado(plata)
-    diario, mensual = oro.construir_oro(plata, params)
+    diario, mensual = oro.construir_oro(plata, params, osm["contexto"] if osm else None)
     diario.to_csv(dir_oro / "clima_oro_diario.csv", index=False, encoding="utf-8")
     mensual.to_csv(dir_oro / "clima_oro_mensual.csv", index=False, encoding="utf-8")
+    try:
+        diario.to_parquet(dir_oro / "clima_oro_diario.parquet", index=False)
+        mensual.to_parquet(dir_oro / "clima_oro_mensual.parquet", index=False)
+        log("[oro] Parquet diario y mensual escritos")
+    except ImportError:
+        log("[oro] ADVERTENCIA: pyarrow no está instalado; no se generaron archivos Parquet")
     (dir_oro / "params_escalado.json").write_text(json.dumps(params, indent=2), encoding="utf-8")
     oro.diccionario_df().to_csv(dir_oro / "diccionario_datos.csv", index=False, encoding="utf-8")
     log(f"[oro] diario={len(diario)} filas · mensual={len(mensual)} filas "
         f"(reducción {100 * (1 - len(mensual) / len(diario)):.1f}%)")
+
+    rep_linaje = oro.verificar_linaje(diario, dir_bronce)
+    (dir_oro / "reporte_linaje.json").write_text(
+        json.dumps(rep_linaje, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"[linaje] {rep_linaje['valores_revisados']} valores revisados · trazables {rep_linaje['trazables']} · "
+        f"imputados {rep_linaje['imputados']} · fallos {rep_linaje['fallos']}")
+    if rep_linaje["fallos"]:
+        raise RuntimeError(f"Linaje roto: {rep_linaje['detalle_fallos'][:3]}")
 
     reporte = {
         "ejecutado": datetime.now().isoformat(timespec="seconds"),
@@ -72,6 +110,8 @@ def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None,
         "oro_diario_filas": len(diario),
         "oro_mensual_filas": len(mensual),
         "reduccion_pct": round(100 * (1 - len(mensual) / len(diario)), 2),
+        "linaje": {k: v for k, v in rep_linaje.items() if k != "detalle_fallos"},
+        "osm": ({"poligonos": osm["poligonos"], "cuarentena": osm["cuarentena"]} if osm else None),
     }
     (dir_plata / "reporte_puerta_calidad.json").write_text(
         json.dumps(reporte, indent=2, ensure_ascii=False, default=str), encoding="utf-8")

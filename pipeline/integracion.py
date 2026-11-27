@@ -4,6 +4,7 @@ Resuelve conflictos de esquema (nombres de columnas), de tipos (fechas y
 números), de unidades (°F, m/s, pulgadas), de zona horaria, de nombres de
 municipio (entity resolution) y de duplicados entre capturas y entre fuentes.
 """
+import hashlib
 import json
 import re
 import unicodedata
@@ -20,6 +21,7 @@ COLUMNAS_MODELO = [
     "fecha", "municipio", "fuente", *cfg.VARIABLES,
     "lat_grid", "lon_grid", "elevacion_m", "zona_horaria",
     "fecha_original", "archivo_origen", "fecha_captura",
+    "bronce_sha256", "bronce_fila", "bronce_ref",
 ]
 
 # Conversión de unidades hacia las canónicas (°C, mm, km/h).
@@ -44,6 +46,20 @@ RENOMBRE_OPEN_METEO = {
 }
 
 
+def huella_archivo(contenido):
+    """SHA-256 del contenido, normalizando saltos de línea (Windows y Linux dan la misma huella)."""
+    return hashlib.sha256(contenido.replace(b"\r\n", b"\n")).hexdigest()
+
+
+def _agregar_linaje(df, archivo, sha):
+    """Cada registro queda ligado a su archivo de bronce, su huella y su posición dentro de él."""
+    df = df.copy()
+    df["bronce_sha256"] = sha
+    df["bronce_fila"] = range(len(df))
+    df["bronce_ref"] = archivo + "|" + sha[:12] + "|" + df["bronce_fila"].astype(str)
+    return df
+
+
 def normalizar_municipio(valor):
     """'Tecomán', ' TECOMAN ', 'tecoman_colima' -> 'tecoman'."""
     if valor is None or (isinstance(valor, float) and np.isnan(valor)):
@@ -59,8 +75,9 @@ def cargar_open_meteo_archive(ruta):
     m = PATRON_ARCHIVO.search(ruta.name)
     if not m:
         raise ValueError(f"Nombre de archivo no reconocido: {ruta.name}")
-    with open(ruta, encoding="utf-8") as f:
-        crudo = json.load(f)
+    contenido = ruta.read_bytes()
+    sha = huella_archivo(contenido)
+    crudo = json.loads(contenido.decode("utf-8"))
 
     diario = crudo["daily"]
     unidades = crudo.get("daily_units", {})
@@ -83,11 +100,11 @@ def cargar_open_meteo_archive(ruta):
     df["elevacion_m"] = crudo.get("elevation")
     df["zona_horaria"] = crudo.get("timezone")
     df["archivo_origen"] = ruta.name
-    df["fecha_captura"] = pd.to_datetime(m["fecha"], format="%Y%m%d")
-    return df[COLUMNAS_MODELO]
+    df["fecha_captura"] = pd.to_datetime(m["fecha"], format="%Y%m%d")  # = fecha de ingesta a bronce
+    return _agregar_linaje(df, ruta.name, sha)[COLUMNAS_MODELO]
 
 
-def adaptar_tabla(crudo, perfil, archivo="(memoria)", fecha_captura=None):
+def adaptar_tabla(crudo, perfil, archivo="(memoria)", fecha_captura=None, sha=None):
     """Lleva una tabla de otra fuente (p. ej. CSV del SMN) al modelo común.
 
     `perfil` describe cómo traducir esa fuente (ver config.PERFIL_SMN).
@@ -118,13 +135,15 @@ def adaptar_tabla(crudo, perfil, archivo="(memoria)", fecha_captura=None):
     out["zona_horaria"] = "America/Mexico_City"
     out["archivo_origen"] = archivo
     out["fecha_captura"] = pd.to_datetime(fecha_captura) if fecha_captura else pd.Timestamp.today().normalize()
-    return out[COLUMNAS_MODELO]
+    sha = sha or hashlib.sha256(archivo.encode("utf-8")).hexdigest()  # sin archivo real: huella del nombre
+    return _agregar_linaje(out.reset_index(drop=True), archivo, sha)[COLUMNAS_MODELO]
 
 
 def cargar_csv_smn(ruta, perfil=None):
     perfil = perfil or cfg.PERFIL_SMN
+    sha = huella_archivo(Path(ruta).read_bytes())
     crudo = pd.read_csv(ruta, encoding=perfil.get("encoding", "utf-8"), dtype=str)
-    return adaptar_tabla(crudo, perfil, archivo=Path(ruta).name)
+    return adaptar_tabla(crudo, perfil, archivo=Path(ruta).name, sha=sha)
 
 
 def cargar_bronce(directorio=None):
@@ -163,15 +182,19 @@ def consolidar_fuentes(df, prioridad=None):
     rango = {f: i for i, f in enumerate(prioridad)}
     d = df.assign(_rk=df["fuente"].map(rango).fillna(len(rango))) \
           .sort_values(["municipio", "fecha", "_rk"], kind="stable")
+    for v in cfg.VARIABLES:  # de qué registro de bronce salió cada valor
+        d[f"_ref_{v}"] = d["bronce_ref"].where(d[v].notna())
     llave = ["municipio", "fecha"]
     g = d.groupby(llave, sort=True)
 
     base = d.drop_duplicates(llave, keep="first").set_index(llave)  # metadatos de la fuente principal
     base[cfg.VARIABLES] = g[cfg.VARIABLES].first()                  # primer no nulo por variable
+    for v in cfg.VARIABLES:
+        base[f"ref_{v}"] = g[f"_ref_{v}"].first()
     base["n_fuentes"] = g.size()
     base["fuentes_usadas"] = g["fuente"].agg("+".join)
     for v in cfg.VARIABLES:
         rng = g[v].agg(lambda s: s.max() - s.min() if s.notna().sum() > 1 else np.nan)
         base[f"dif_{v}"] = rng
-    base = base.drop(columns=["_rk"]).reset_index()
+    base = base.drop(columns=["_rk", *[f"_ref_{v}" for v in cfg.VARIABLES]]).reset_index()
     return base

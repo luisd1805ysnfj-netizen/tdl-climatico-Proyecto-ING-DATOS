@@ -35,6 +35,7 @@ def _check_rango(nombre, lo, hi):
     regla = f"{nombre}: rango [{lo}, {hi}]"
     return pa.Check(lambda s: _num(s).between(lo, hi), name=regla, error=regla)
 
+
 def construir_esquema(hoy=None):
     hoy = pd.Timestamp(hoy) if hoy is not None else pd.Timestamp.today().normalize()
     fmin = pd.Timestamp(cfg.FECHA_MINIMA)

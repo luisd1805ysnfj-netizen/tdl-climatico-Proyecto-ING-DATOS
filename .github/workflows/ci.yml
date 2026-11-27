@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  calidad:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # gitleaks revisa TODO el historial, no solo el último commit
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Linter (ruff)
+        run: ruff check pipeline tests
+
+      - name: Pruebas con cobertura mínima de 60 %
+        run: pytest --cov=pipeline --cov-report=term-missing --cov-fail-under=60
+
+      - name: Puerta de calidad de datos (corre el pipeline sobre bronce)
+        run: |
+          if ls data/bronce/clima_historico_*.json 1> /dev/null 2>&1; then
+            python -m pipeline.run_pipeline
+          else
+            echo "No hay datos en data/bronce; se omite."
+          fi
+
+      - name: Secretos expuestos (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

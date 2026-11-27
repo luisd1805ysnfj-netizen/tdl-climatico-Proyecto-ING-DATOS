@@ -1,0 +1,52 @@
+# Diccionario de datos · capa oro
+
+| Columna | Tabla | Tipo | Unidad | Descripción |
+|---|---|---|---|---|
+| `fecha` | diaria | fecha | AAAA-MM-DD | Día calendario local (America/Mexico_City). |
+| `municipio` | ambas | texto |  | Municipio normalizado: tecoman, colima, manzanillo. |
+| `fuente` | diaria | texto |  | Fuente principal del registro. |
+| `fuentes_usadas` | diaria | texto |  | Fuentes combinadas para el día (linaje), p. ej. 'open-meteo-archive'. |
+| `n_fuentes` | diaria | entero |  | Número de fuentes que reportaron ese día y municipio. |
+| `tmax_c` | diaria | decimal | °C | Temperatura máxima diaria a 2 m. |
+| `tmin_c` | diaria | decimal | °C | Temperatura mínima diaria a 2 m. |
+| `precip_mm` | diaria | decimal | mm | Precipitación total del día. |
+| `viento_max_kmh` | diaria | decimal | km/h | Velocidad máxima del viento a 10 m. |
+| `<variable>_imputado` | diaria | booleano |  | True si el valor se imputó (no es observación). |
+| `dif_<variable>` | diaria | decimal | unidad de la variable | Discrepancia absoluta entre fuentes cuando hay 2 o más. |
+| `fila_agregada` | diaria | booleano |  | True si el día no llegó en bronce y se creó como faltante. |
+| `lat_grid / lon_grid` | diaria | decimal | grados | Coordenadas REALES de la celda de malla usada por la fuente. |
+| `elevacion_m` | diaria | decimal | m | Elevación de la celda de malla. |
+| `archivo_origen` | diaria | texto |  | Archivo de bronce de la fuente principal del registro (linaje). |
+| `fecha_captura` | diaria | fecha |  | FECHA DE INGESTA: día en que se capturó el archivo de origen a bronce. |
+| `id_registro` | diaria | texto |  | Identificador estable del registro: municipio|AAAA-MM-DD. |
+| `origen_<variable>` | diaria | texto |  | LINAJE por valor: 'archivo|huella12|fila' en bronce, o IMPUTADO:<método>, o SIN_DATO. |
+| `bronce_sha256 / bronce_fila / bronce_ref` | diaria | texto |  | Huella SHA-256 del archivo de bronce, posición del registro dentro de él y referencia compuesta. |
+| `area_agricola_ha` | diaria | decimal | ha | Superficie agrícola (OSM) dentro del radio del punto de clima; atributo fijo por municipio. |
+| `pct_area_agricola` | diaria | decimal | % | Porcentaje del círculo de análisis cubierto por uso agrícola (OSM). |
+| `radio_agricola_km` | diaria | decimal | km | Radio del círculo de análisis alrededor del punto de la malla de clima. |
+| `z_robusto_<variable>` | diaria | decimal |  | Puntaje z modificado de la anomalía (mediana/MAD). |
+| `atipico_<variable>` | diaria | booleano |  | Marca de valor atípico por variable (se conserva el dato). |
+| `atipico_multivariado` | diaria | booleano |  | Marcado por Isolation Forest (combinación rara de variables). |
+| `atipico_cualquiera` | diaria | booleano |  | True si cualquier método lo marcó; revisar antes de concluir. |
+| `<variable>_m7 / precip_mm_acum7` | diaria | decimal |  | Suavizado de 7 días (ruido reducido) para visualización. |
+| `<variable>_minmax` | diaria | decimal | 0 a 1 | Normalización min-max con parámetros en params_escalado.json. |
+| `<variable>_z` | diaria | decimal | desv. estándar | Estandarización z-score con parámetros en params_escalado.json. |
+| `tmax_categoria` | diaria | categoría |  | fresco <28 · calido 28-32 · muy_calido 32-35 · extremo >=35 °C. |
+| `precip_categoria` | diaria | categoría |  | sin_lluvia · ligera (0-5) · moderada (5-20) · fuerte (20-50) · muy_fuerte (>50 mm). |
+| `tmin_cuartil` | diaria | categoría |  | Cuartil de tmin (discretización por frecuencia igual). |
+| `viento_rango` | diaria | categoría |  | Rango de viento (discretización por ancho igual, 4 rangos). |
+| `dia_lluvioso` | diaria | booleano |  | True si precip_mm >= 1. |
+| `anio, trimestre, mes, mes_nombre, anio_mes` | diaria | mixto |  | Jerarquía temporal: día -> mes -> trimestre -> año. |
+| `temporada` | diaria | texto |  | lluvias (jun-oct) o secas (nov-may). |
+| `zona` | diaria | texto |  | Jerarquía geográfica: municipio -> zona (Costa/Valle) -> estado. |
+| `estado` | diaria | texto |  | Colima. |
+| `n_dias` | mensual | entero |  | Días agregados en el mes. |
+| `tmax_media / tmax_max` | mensual | decimal | °C | Media y máximo mensual de tmax. |
+| `tmin_media / tmin_min` | mensual | decimal | °C | Media y mínimo mensual de tmin. |
+| `precip_total_mm` | mensual | decimal | mm | Lluvia acumulada del mes. |
+| `dias_lluvia` | mensual | entero | días | Días con precip_mm >= 1. |
+| `viento_medio / viento_max` | mensual | decimal | km/h | Media y máximo mensual del viento máximo diario. |
+| `n_atipicos` | mensual | entero | días | Días marcados como atípicos en el mes. |
+| `primer_dia / ultimo_dia` | mensual | fecha |  | LINAJE mensual: cada fila agrega los registros diarios (id_registro) de ese municipio entre estas fechas. |
+| `ultima_ingesta` | mensual | fecha |  | Fecha de captura más reciente entre los días agregados. |
+| `n_dias_imputados` | mensual | entero | días | Días del mes con al menos una variable imputada (no observada). |

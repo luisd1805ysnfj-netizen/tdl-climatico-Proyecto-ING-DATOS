@@ -1,0 +1,80 @@
+{
+  "generated_at_utc": "2026-11-27T16:39:00+00:00",
+  "baseline_revision": "b96c6f878ec8b4ae2e460045b0fedcc8385277b4",
+  "runtime": {
+    "python": "3.14.0",
+    "pandas": "3.0.5"
+  },
+  "methodology": {
+    "runs_per_variant": 3,
+    "execution_order": "interleaved baseline/optimized pairs",
+    "time_metric": "median perf_counter seconds; pipeline replay and output writes",
+    "memory_metric": "median tracemalloc peak in MiB; Python allocations only",
+    "network": "offline replay of the same bronce files; no HTTP calls",
+    "equivalence": "SHA-256 hashes of plata, oro diario and oro mensual must match"
+  },
+  "capture_log": {
+    "available": true,
+    "path": "calidad/bitacora_captura.csv",
+    "attempts": 45,
+    "successes": 42,
+    "failed_attempts": 3,
+    "http_429": 3,
+    "timeouts": 0
+  },
+  "before": {
+    "label": "Antes",
+    "runs": 3,
+    "median_elapsed_seconds": 7.040674500000023,
+    "median_peak_tracemalloc_mib": 12.363301277160645,
+    "bronze_rows": 3495,
+    "duplicate_capture_rows": 201,
+    "schema_or_quality_rejected_rows": 0,
+    "discarded_or_quarantined_rows": 201,
+    "critical_missing_before_imputation": 0,
+    "critical_missing_after_imputation": 0,
+    "imputed_critical_values": 0,
+    "silver_rows": 3294,
+    "gold_daily_rows": 3294,
+    "gold_monthly_rows": 111,
+    "lineage_values_checked": 13176,
+    "lineage_failures": 0,
+    "frame_sha256": {
+      "plata": "5674973c7798d7b46ff02aaeb73eaf4a6cb9ef81afab88f240ee9889baf65483",
+      "oro_diario": "0ba2459de42e35b50cd32a06447c18c1b808bc2aaeb518742b8dfe37ac5b6188",
+      "oro_mensual": "7f336686178f69ea91e902861120e164abd3d9e84c97d0e79101dd9f72d16d47"
+    }
+  },
+  "after": {
+    "label": "Después",
+    "runs": 3,
+    "median_elapsed_seconds": 4.378286000001026,
+    "median_peak_tracemalloc_mib": 12.321060180664062,
+    "bronze_rows": 3495,
+    "duplicate_capture_rows": 201,
+    "schema_or_quality_rejected_rows": 0,
+    "discarded_or_quarantined_rows": 201,
+    "critical_missing_before_imputation": 0,
+    "critical_missing_after_imputation": 0,
+    "imputed_critical_values": 0,
+    "silver_rows": 3294,
+    "gold_daily_rows": 3294,
+    "gold_monthly_rows": 111,
+    "lineage_values_checked": 13176,
+    "lineage_failures": 0,
+    "frame_sha256": {
+      "plata": "5674973c7798d7b46ff02aaeb73eaf4a6cb9ef81afab88f240ee9889baf65483",
+      "oro_diario": "0ba2459de42e35b50cd32a06447c18c1b808bc2aaeb518742b8dfe37ac5b6188",
+      "oro_mensual": "7f336686178f69ea91e902861120e164abd3d9e84c97d0e79101dd9f72d16d47"
+    }
+  },
+  "comparison": {
+    "elapsed_seconds_reduction_pct": 37.81,
+    "peak_python_memory_reduction_pct": 0.34,
+    "discarded_or_quarantined_rows_delta": 0,
+    "schema_or_quality_rejections_delta": 0,
+    "critical_missing_delta": 0,
+    "lineage_failures_delta": 0,
+    "output_data_identical": true
+  }
+}

@@ -13,7 +13,7 @@ Observatorio enfocado en el monitoreo histórico y pronóstico de temperatura y 
 | Criterio de la rúbrica | Evidencia (enlace) | Nota del equipo |
 | --- | --- | --- |
 | Captura funcionando y serie histórica | [extractors/clima_extractor.py](../../extractors/clima_extractor.py) | Serie de 36 meses descargada y guardada en `data/bronce/` |
-| Plan de recopilación y ética | [docs/E0/propuesta.md](../../docs/E0/propuesta.md) | Análisis de Open-Meteo y cumplimiento de `robots.txt` del SMN |
+| Plan de recopilación y ética | [docs/E0/propuesta.md](../../docs/E0/propuesta.md) | Open-Meteo integrado; SMN propuesto pero no integrado ni verificado. Se documenta el `robots.txt` de Open-Meteo sin tratarlo como autorización. |
 
 ---
 
@@ -28,3 +28,8 @@ Observatorio enfocado en el monitoreo histórico y pronóstico de temperatura y 
 | Criterio de la rúbrica | Evidencia (enlace) | Nota del equipo |
 | --- | --- | --- |
 | Registros PSP y Objetivos | [calidad/](../../calidad/) | Archivos CSV de tiempo y defectos integrados + 3 objetivos medibles |
+
+**Evidencia pendiente:** la entrevista está anonimizada y el repositorio no
+incluye constancia de consentimiento ni registro independiente. La disponibilidad
+de la captura se evalúa con la bitácora; no se presume que el objetivo PSP se
+haya alcanzado.

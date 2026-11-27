@@ -1,0 +1,139 @@
+{
+  "notice": "Catálogo local orientativo para demostración. Rangos, precios y mínimos no son datos oficiales ni ofertas reales; validar con fuentes y compradores antes de tomar decisiones.",
+  "priceBasis": "Precios MXN/USD independientes e ilustrativos por kg; no representan una conversión cambiaria ni una cotización de mercado.",
+  "deliveryTermsReference": "Referencia orientativa: producto fresco, limpio y clasificado; empaque, calidad, logística y precio final se confirman con cada comprador.",
+  "crops": {
+    "Zanahoria": {
+      "requirements": { "temperatureC": { "min": 5, "optimum": 18, "max": 30 }, "humidityPercent": { "min": 40, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 12, "USD": 0.65 },
+      "minimumOrderKg": 500
+    },
+    "Cebolla": {
+      "requirements": { "temperatureC": { "min": 7, "optimum": 20, "max": 32 }, "humidityPercent": { "min": 35, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 18, "USD": 0.95 },
+      "minimumOrderKg": 500
+    },
+    "Zarzamora": {
+      "requirements": { "temperatureC": { "min": 8, "optimum": 20, "max": 30 }, "humidityPercent": { "min": 45, "optimum": 70, "max": 90 } },
+      "pricesPerKg": { "MXN": 80, "USD": 4.25 },
+      "minimumOrderKg": 100
+    },
+    "Maíz": {
+      "requirements": { "temperatureC": { "min": 10, "optimum": 25, "max": 35 }, "humidityPercent": { "min": 35, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 9, "USD": 0.48 },
+      "minimumOrderKg": 1000
+    },
+    "Tomate": {
+      "requirements": { "temperatureC": { "min": 10, "optimum": 23, "max": 32 }, "humidityPercent": { "min": 40, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 20, "USD": 1.05 },
+      "minimumOrderKg": 300
+    },
+    "Aguacate": {
+      "requirements": { "temperatureC": { "min": 10, "optimum": 22, "max": 32 }, "humidityPercent": { "min": 45, "optimum": 70, "max": 90 } },
+      "pricesPerKg": { "MXN": 55, "USD": 2.90 },
+      "minimumOrderKg": 300
+    },
+    "Limón": {
+      "requirements": { "temperatureC": { "min": 10, "optimum": 24, "max": 34 }, "humidityPercent": { "min": 40, "optimum": 70, "max": 90 } },
+      "pricesPerKg": { "MXN": 25, "USD": 1.30 },
+      "minimumOrderKg": 500
+    },
+    "Fresa": {
+      "requirements": { "temperatureC": { "min": 5, "optimum": 18, "max": 28 }, "humidityPercent": { "min": 45, "optimum": 70, "max": 90 } },
+      "pricesPerKg": { "MXN": 60, "USD": 3.20 },
+      "minimumOrderKg": 100
+    },
+    "Chile Jalapeño": {
+      "requirements": { "temperatureC": { "min": 12, "optimum": 24, "max": 34 }, "humidityPercent": { "min": 40, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 22, "USD": 1.15 },
+      "minimumOrderKg": 200
+    },
+    "Papa": {
+      "requirements": { "temperatureC": { "min": 5, "optimum": 18, "max": 28 }, "humidityPercent": { "min": 45, "optimum": 70, "max": 90 } },
+      "pricesPerKg": { "MXN": 18, "USD": 0.95 },
+      "minimumOrderKg": 500
+    },
+    "Pepino": {
+      "requirements": { "temperatureC": { "min": 15, "optimum": 25, "max": 35 }, "humidityPercent": { "min": 45, "optimum": 70, "max": 90 } },
+      "pricesPerKg": { "MXN": 14, "USD": 0.75 },
+      "minimumOrderKg": 300
+    },
+    "Brócoli": {
+      "requirements": { "temperatureC": { "min": 5, "optimum": 18, "max": 28 }, "humidityPercent": { "min": 45, "optimum": 70, "max": 90 } },
+      "pricesPerKg": { "MXN": 25, "USD": 1.30 },
+      "minimumOrderKg": 200
+    },
+    "Mango": {
+      "requirements": { "temperatureC": { "min": 15, "optimum": 27, "max": 38 }, "humidityPercent": { "min": 35, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 24, "USD": 1.25 },
+      "minimumOrderKg": 500
+    },
+    "Plátano": {
+      "requirements": { "temperatureC": { "min": 18, "optimum": 27, "max": 35 }, "humidityPercent": { "min": 55, "optimum": 75, "max": 95 } },
+      "pricesPerKg": { "MXN": 16, "USD": 0.85 },
+      "minimumOrderKg": 500
+    },
+    "Calabacita": {
+      "requirements": { "temperatureC": { "min": 10, "optimum": 22, "max": 32 }, "humidityPercent": { "min": 40, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 18, "USD": 0.95 },
+      "minimumOrderKg": 300
+    },
+    "Uva": {
+      "requirements": { "temperatureC": { "min": 10, "optimum": 24, "max": 36 }, "humidityPercent": { "min": 30, "optimum": 55, "max": 75 } },
+      "pricesPerKg": { "MXN": 50, "USD": 2.65 },
+      "minimumOrderKg": 300
+    },
+    "Coco": {
+      "requirements": { "temperatureC": { "min": 20, "optimum": 27, "max": 35 }, "humidityPercent": { "min": 55, "optimum": 80, "max": 95 } },
+      "pricesPerKg": { "MXN": 20, "USD": 1.05 },
+      "minimumOrderKg": 500
+    },
+    "Papaya": {
+      "requirements": { "temperatureC": { "min": 18, "optimum": 27, "max": 36 }, "humidityPercent": { "min": 50, "optimum": 75, "max": 95 } },
+      "pricesPerKg": { "MXN": 22, "USD": 1.15 },
+      "minimumOrderKg": 300
+    },
+    "Sandía": {
+      "requirements": { "temperatureC": { "min": 18, "optimum": 28, "max": 38 }, "humidityPercent": { "min": 30, "optimum": 60, "max": 80 } },
+      "pricesPerKg": { "MXN": 12, "USD": 0.65 },
+      "minimumOrderKg": 500
+    },
+    "Melón": {
+      "requirements": { "temperatureC": { "min": 15, "optimum": 26, "max": 36 }, "humidityPercent": { "min": 30, "optimum": 60, "max": 80 } },
+      "pricesPerKg": { "MXN": 18, "USD": 0.95 },
+      "minimumOrderKg": 300
+    },
+    "Chile verde": {
+      "requirements": { "temperatureC": { "min": 12, "optimum": 24, "max": 34 }, "humidityPercent": { "min": 40, "optimum": 65, "max": 85 } },
+      "pricesPerKg": { "MXN": 24, "USD": 1.25 },
+      "minimumOrderKg": 200
+    }
+  },
+  "referencePoints": [
+    { "id": "ref-panama", "city": "Panamá", "country": "Panamá", "regionKeys": ["AMERICA"], "lat": 8.98, "lng": -79.52 },
+    { "id": "ref-colima", "city": "Colima", "country": "México", "regionKeys": ["Colima", "México"], "lat": 18.91, "lng": -103.88 },
+    { "id": "ref-mcallen", "city": "McAllen, Texas", "country": "Estados Unidos", "regionKeys": ["Estados Unidos"], "lat": 26.2034, "lng": -98.23 },
+    { "id": "ref-celaya", "city": "Celaya, Guanajuato", "country": "México", "regionKeys": ["México"], "lat": 20.52, "lng": -100.81 },
+    { "id": "ref-bogota", "city": "Bogotá", "country": "Colombia", "regionKeys": ["Colombia"], "lat": 4.57, "lng": -74.1 },
+    { "id": "ref-ica", "city": "Ica", "country": "Perú", "regionKeys": ["Perú"], "lat": -14.07, "lng": -75.73 },
+    { "id": "ref-curico", "city": "Curicó, Maule", "country": "Chile", "regionKeys": ["Chile"], "lat": -34.98, "lng": -71.24 },
+    { "id": "ref-ambato", "city": "Ambato, Tungurahua", "country": "Ecuador", "regionKeys": ["Ecuador"], "lat": -1.24, "lng": -78.62 },
+    { "id": "ref-sao-paulo", "city": "São Paulo", "country": "Brasil", "regionKeys": ["Brasil"], "lat": -23.55, "lng": -46.63 },
+    { "id": "ref-buenos-aires", "city": "Buenos Aires", "country": "Argentina", "regionKeys": ["Argentina"], "lat": -34.6, "lng": -58.38 },
+    { "id": "ref-santo-domingo", "city": "Santo Domingo", "country": "República Dominicana", "regionKeys": ["Caribe"], "lat": 18.5, "lng": -69.9 },
+    { "id": "ref-guadalajara", "city": "Guadalajara, Jalisco", "country": "México", "regionKeys": ["Jalisco, México", "México"], "lat": 20.67, "lng": -103.35 },
+    { "id": "ref-cdmx", "city": "Ciudad de México", "country": "México", "regionKeys": ["CDMX, México", "México"], "lat": 19.43, "lng": -99.13 },
+    { "id": "ref-morelia", "city": "Morelia, Michoacán", "country": "México", "regionKeys": ["Michoacán, México", "México"], "lat": 19.7, "lng": -101.19 },
+    { "id": "ref-culiacan", "city": "Culiacán, Sinaloa", "country": "México", "regionKeys": ["Sinaloa, México", "México"], "lat": 24.8, "lng": -107.39 },
+    { "id": "ref-phoenix", "city": "Phoenix, Arizona", "country": "Estados Unidos", "regionKeys": ["Arizona, Estados Unidos", "Estados Unidos"], "lat": 33.45, "lng": -112.07 },
+    { "id": "ref-fresno", "city": "Fresno, California", "country": "Estados Unidos", "regionKeys": ["California, Estados Unidos", "Estados Unidos"], "lat": 36.74, "lng": -119.79 },
+    { "id": "ref-miami", "city": "Miami, Florida", "country": "Estados Unidos", "regionKeys": ["Florida, Estados Unidos", "Estados Unidos"], "lat": 25.76, "lng": -80.19 },
+    { "id": "ref-toronto", "city": "Toronto", "country": "Canadá", "regionKeys": ["Canadá"], "lat": 43.65, "lng": -79.38 },
+    { "id": "ref-guatemala", "city": "Ciudad de Guatemala", "country": "Guatemala", "regionKeys": ["Guatemala"], "lat": 14.63, "lng": -90.51 },
+    { "id": "ref-san-jose", "city": "San José", "country": "Costa Rica", "regionKeys": ["Costa Rica"], "lat": 9.93, "lng": -84.08 },
+    { "id": "ref-tegucigalpa", "city": "Tegucigalpa", "country": "Honduras", "regionKeys": ["Honduras"], "lat": 14.07, "lng": -87.19 },
+    { "id": "ref-managua", "city": "Managua", "country": "Nicaragua", "regionKeys": ["Nicaragua"], "lat": 12.11, "lng": -86.24 },
+    { "id": "ref-san-salvador", "city": "San Salvador", "country": "El Salvador", "regionKeys": ["El Salvador"], "lat": 13.69, "lng": -89.19 },
+    { "id": "ref-belize", "city": "Belmopán", "country": "Belice", "regionKeys": ["Belice"], "lat": 17.25, "lng": -88.77 }
+  ]
+}

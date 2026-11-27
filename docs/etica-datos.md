@@ -1,89 +1,138 @@
-# Declaración de ética y legalidad de datos
+# Ética, legalidad y gobernanza de datos
 
-Observatorio de Inteligencia Climática y Gestión de Riesgos Agrícolas · Colima, Tecomán y Manzanillo
-Equipo: Luis · Luis David (registro principal identificado en la bitácora de calidad) · Última revisión de términos: 26 de noviembre de 2026 · Versión de la entrega E2
+Observatorio Climático y Mercado · Última revisión documental: 27 de noviembre
+de 2026.
 
-> Los términos pueden cambiar. Esta declaración registra el contenido consultado el 26 de noviembre de 2026 y debe
-> revisarse nuevamente antes de publicar o automatizar una captura.
+> Esta revisión describe los servicios y datos presentes en el repositorio. No
+> constituye asesoría legal ni sustituye la revisión de los términos vigentes
+> del proveedor, endpoint, plan o caso de uso concreto.
 
-## 1. Resumen
+## 1. Fuentes y estado de conexión
 
-| Fuente | Qué aporta | Datos personales | Licencia de los datos | Uso |
-|---|---|---|---|---|
-| Open-Meteo (API de archivo) | Clima diario: temperatura, lluvia y viento | No | CC BY 4.0 | Académico, no comercial |
-| OpenStreetMap vía Overpass API | Uso de suelo agrícola (polígonos) | No, tras el saneamiento de la sección 3 | ODbL 1.0 | Académico |
-
-Ninguna fuente se obtiene con *scraping* de páginas web: ambas son **APIs públicas documentadas** pensadas para acceso
-programático. Aun así se aplican las reglas del proyecto: User-Agent honesto, pausa entre peticiones, reintentos con espera y
-respeto a los límites publicados.
-
-## 2. Base legal y términos de uso, por fuente
-
-### 2.1 Open-Meteo (`archive-api.open-meteo.com`)
-- **Términos:** la API gratuita es solo para **uso no comercial**, con menos de 10,000 llamadas al día, 5,000 por hora y 600
-  por minuto, y exige aceptar la licencia de datos CC BY 4.0.
-- **Nuestro consumo:** 3 peticiones por captura diaria (una por municipio) más la descarga histórica inicial. Es
-  aproximadamente 0.03 % del límite diario.
-- **Licencia CC BY 4.0:** obliga a dar crédito, enlazar la licencia e indicar si se hicieron cambios. Cumplimiento: el tablero y el mapa
-  muestran "Weather data by Open-Meteo.com" con enlace, y la documentación declara que los datos fueron transformados (limpieza,
-  imputación marcada, agregación mensual).
-- **Implicación comercial (importante):** el modelo de negocio del proyecto contempla suscripciones. Mientras el
-  observatorio sea académico, el uso gratuito es válido. **Si algún día se cobra por él, se necesita una suscripción comercial de
-  Open-Meteo o una instancia propia** (el servidor es de código abierto).
-- **Fuentes y robots.txt:** `https://archive-api.open-meteo.com/robots.txt` — consultado el 26 de noviembre de 2026.
-  Respuesta: `User-agent: *` y `Disallow: /`. Interpretación conservadora: no usar raspado indiscriminado; utilizar
-  solamente la API documentada y dentro de sus límites. El archivo no autoriza por sí solo usos fuera de los términos.
-
-### 2.2 OpenStreetMap vía Overpass (`overpass-api.de`)
-- **Términos:** el servidor público de Overpass está pensado para **consultas manuales y de bajo volumen**; quien lo use desde un
-  script debe identificarse con un User-Agent propio y puede ser limitado (error 429) o bloqueado si abusa.
-- **Nuestro consumo:** 3 consultas por captura, con 5 s de pausa entre ellas, reintentos con espera exponencial y un espejo de
-  respaldo. La captura es **mensual o manual**, nunca por hora: el uso de suelo cambia despacio.
-- **Licencia ODbL 1.0:** exige atribución ("© colaboradores de OpenStreetMap"), y que las **bases de datos derivadas** se compartan
-  bajo la misma licencia (*share-alike*). Cumplimiento: la atribución aparece en el mapa, el tablero y dentro de cada
-  archivo de bronce (campo `osm3s.copyright`).
-- **Decisión pendiente para E3 (publicación del dataset):** la capa derivada de OSM (`osm_parcelas.geojson`) es una extracción
-  sustancial, así que debe publicarse bajo ODbL. Las tablas de clima van bajo CC BY 4.0. Se publicarán **separadas** con su licencia
-  cada una. Esto es una interpretación del equipo, no asesoría legal.
-- **robots.txt:** `https://overpass-api.de/robots.txt` — consultado el 26 de noviembre de 2026.
-  Respuesta: `User-agent: *` con `Disallow: /api/` y `Disallow: /munin/`. Conclusión conservadora: la captura real
-  debe detenerse hasta confirmar por separado la política vigente y elegir un método autorizado. Las pruebas actuales
-  son offline y no realizan llamadas reales.
-
-### 2.3 Marco legal general
-- **Datos personales:** el observatorio no necesita ni captura datos de personas físicas, por lo que el tratamiento queda fuera del
-  alcance principal de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (verifiquen la versión vigente).
-  Aun así se aplica el principio de **minimización**: lo que no se necesita no se guarda.
-- **Reglas del proyecto:** cero datos personales; scraping ético; todo reproducible.
-
-## 3. Privacidad: riesgos y mitigaciones
-
-| Riesgo | Dónde puede aparecer | Mitigación aplicada | Evidencia |
+| Fuente | Uso en el proyecto | Estado / licencia relevante | Atribución y límite |
 |---|---|---|---|
-| Nombres de propietarios u operadores | Etiquetas `name`, `operator`, `owner` de los polígonos de OSM | **Lista blanca** de etiquetas (`landuse`, `crop`, `trees`, `produce`, `orchard`, `plant`, `irrigation`); el resto se elimina **antes de escribir en bronce** | `extractors/osm_overpass.py::sanear_elementos` y prueba `test_se_eliminan_los_datos_personales_antes_de_guardar` |
-| Teléfonos, correos, direcciones | Etiquetas `phone`, `email`, `addr:*`, `contact:*` | Misma lista blanca | Misma prueba |
-| Identificar a un dueño por la forma de su terreno | Polígonos de huertas visibles en el mapa | Solo uso de suelo y cultivo; sin dueños ni direcciones; geometría simplificada en el mapa; cifras publicadas por municipio, no por predio | `pipeline/mapa.py` |
-| Rastro del saneamiento con datos sensibles | Bitácoras y reportes | El reporte de saneamiento guarda **cuántas etiquetas y de qué clave** se descartaron, nunca sus valores | `documento["saneamiento"]` en cada archivo de bronce |
-| Datos del equipo | Repositorio | Sin credenciales en el repositorio; `gitleaks` en cada push | `.github/workflows/ci.yml` |
+| Open-Meteo Archive API | Captura histórica de Bronce | Integrada; CC BY 4.0 y términos del servicio | API gratuita solo para uso no comercial; atribuir y declarar cambios |
+| Open-Meteo Forecast / Seasonal | Datos climáticos del frontend | Integradas desde el navegador | Atribución visible; valores de modelo/reanálisis, no mediciones verificadas en parcela |
+| OpenStreetMap / Overpass API | Ubicaciones mapeadas en el frontend; extractor geoespacial experimental | ODbL 1.0; no hay captura OSM real persistida | Atribuir a colaboradores OSM; el punto no verifica comprador o producto |
+| OpenStreetMap tiles | Mapa interactivo | Tiles públicos sujetos a su política de uso | © OpenStreetMap contributors; no descarga masiva, precarga ni uso offline no permitido |
+| Frankfurter | Conversión de referencia MXN/USD | Conectada; tasa diaria indicativa | No es precio intradía ni tasa de liquidación; confirmar condiciones antes de redistribuir |
+| OSRM público | Ruta de respaldo | Conectado como servicio público de referencia | Geometría/distancia/tiempo estimado; no ofrece tráfico real ni tarifas; no usar como backend de alto volumen |
+| TollGuru | Tarifas/rutas, opcional | Solo conectado si el proxy de servidor tiene `TOLLGURU_API_KEY` | La clave es secreta de servidor, nunca `VITE_*`; datos sujetos al plan y condiciones |
+| Mercado / rangos agronómicos | Endpoints opcionales | No hay proveedor oficial de mercado conectado por defecto | Catálogo local ilustrativo; metadatos de fuente declarados no certifican autorización |
 
-## 4. Sesgos conocidos y cómo se mitigan
+El proyecto no implementa *scraping* de páginas web. Usa endpoints API
+documentados donde se indica; que un endpoint responda no demuestra por sí solo
+que cualquier volumen, finalidad o redistribución esté autorizado. La
+disponibilidad de la API tampoco sustituye la licencia de los datos.
 
-| Sesgo | Efecto sobre las conclusiones | Mitigación |
+## 2. Términos, políticas y límites
+
+### 2.1 Open-Meteo
+
+- Términos: <https://open-meteo.com/en/terms>. Licencia de datos:
+  <https://open-meteo.com/en/licence>.
+- La API gratuita se limita a usos no comerciales según los términos del
+  proveedor y requiere atribución CC BY 4.0. El proyecto es académico; cualquier
+  explotación comercial requiere contratar o conseguir permisos compatibles.
+- El histórico es reanálisis/modelo asociado a una celda de malla, no una
+  observación garantizada en la ubicación marcada. Se conservan las coordenadas
+  efectivamente devueltas por la API.
+- `https://archive-api.open-meteo.com/robots.txt` fue consultado el
+  2026-11-26 y devolvió `User-agent: *` y `Disallow: /`. No se usa para autorizar
+  rastreo: la aplicación consulta el endpoint API documentado y no raspa páginas.
+  Deben respetarse los términos, límites y atribución vigentes.
+
+### 2.2 OpenStreetMap y Overpass
+
+- Derechos y atribución OSM: <https://www.openstreetmap.org/copyright>.
+  Overpass API: <https://wiki.openstreetmap.org/wiki/Overpass_API>.
+- Los datos OSM están sujetos a ODbL 1.0. Una base derivada sustancial puede
+  tener obligaciones *share-alike*; la extracción OSM no se mezcla con el
+  dataset climático CC BY.
+- El extractor `extractors/osm_overpass.py` tiene pruebas offline, pero no se
+  encontró una captura real `osm_agricola_*.json`. No ejecutar la captura real
+  hasta revisar la política vigente del endpoint y confirmar que el volumen
+  previsto está permitido.
+- El frontend consulta Overpass para ubicaciones de un radio de 40 km y mantiene
+  una caché de 15 minutos solo en memoria del navegador. La caché local no
+  limita el volumen agregado de usuarios en un despliegue público.
+- `https://overpass-api.de/robots.txt` fue consultado el 2026-11-26 y devolvió
+  `Disallow: /api/` y `Disallow: /munin/`. Robots es una política para
+  rastreadores, no una licencia ni una autorización contractual. El proyecto no
+  infiere permiso automatizado de la disponibilidad técnica; para producción,
+  confirmar directamente la política aplicable y considerar un servicio
+  contratado o una instancia propia autorizada.
+- Tiles: <https://operations.osmfoundation.org/policies/tiles/>. Se usa la capa
+  interactiva estándar, con atribución visible y sin descargas masivas.
+
+### 2.3 Rutas, cambio y APIs opcionales
+
+- OSRM público solo aporta rutas de referencia. El modo de respaldo no presenta
+  tráfico ni tarifas de peaje como datos reales.
+- TollGuru se consulta desde un proxy de servidor; la clave vive en el secreto
+  `TOLLGURU_API_KEY` y nunca debe incluirse en el bundle del navegador. La
+  cotización y cobertura dependen del contrato/plan configurado.
+- Frankfurter devuelve una tasa diaria de referencia MXN/USD. No representa una
+  operación cambiaria ni sustituye la moneda original de una cotización.
+- `VITE_MARKET_PRICES_API` y `VITE_CROP_REQUIREMENTS_API` son conectores
+  opcionales. La aplicación puede validar metadatos declarados (`source`, URL,
+  licencia y fecha), pero no puede certificar que el proveedor tenga derechos
+  para redistribuir los datos.
+- No se conecta SNIIM, USDA AMS ni SMN/CONAGUA por defecto. El catálogo local
+  visible de precios, mínimos y rangos de cultivo es ilustrativo, no cotización,
+  comprador, tarifa ni rango agronómico oficial.
+
+## 3. Privacidad y minimización
+
+El pipeline meteorológico no guarda nombres, teléfonos, correos ni otros
+identificadores personales. El extractor OSM aplica una lista blanca antes de
+escribir en Bronce. Esto no significa que la aplicación web no procese datos de
+ubicación:
+
+- El navegador solicita permiso para GPS solo cuando la persona pulsa “Usar mi
+  ubicación”; también puede marcar una parcela manualmente.
+- Las coordenadas seleccionadas se envían a proveedores externos para solicitar
+  clima, ubicaciones o rutas. La interfaz lo informa en “Fuentes y API”.
+- El frontend no guarda deliberadamente la ubicación en un perfil ni en
+  `localStorage`; la conserva en memoria durante la sesión. La retención de
+  registros de red por proveedores queda bajo sus políticas.
+- No incluir coordenadas de parcelas privadas en reportes públicos sin
+  consentimiento. Revisar la legislación de privacidad vigente antes de publicar
+  el servicio.
+
+## 4. Sesgos y límites de interpretación
+
+| Riesgo | Efecto | Mitigación |
 |---|---|---|
-| **Mapeo voluntario incompleto** (OSM) | Subestima la superficie agrícola, sobre todo en zonas rurales poco mapeadas | Se presenta como **mínimo**, no como censo; advertencia visible en el tablero; contraste futuro con DENUE o el Marco Geoestadístico |
-| **Solo polígonos simples** (`way`) | Las parcelas grandes mapeadas como multipolígono (relaciones) no se cuentan | Limitación declarada; las relaciones quedan fuera de la consulta a propósito para no depender de reconstruir geometrías complejas |
-| **Círculo, no límite municipal** | Incluye predios de municipios vecinos y, en Manzanillo, **mar** (el porcentaje de cobertura se subestima) | Se usa como indicador de exposición del punto de clima, no del municipio; mejora prevista con el Marco Geoestadístico |
-| **Reanálisis de malla, no estación** (Open-Meteo) | Suaviza extremos de lluvia y viento; la celda tiene otra elevación que el punto pedido (p. ej. la malla de Colima está a ~495 m) | Se guardan `lat_grid`, `lon_grid` y `elevacion_m` reales en cada registro; los extremos se marcan como atípicos y no se borran; contraste previsto con datos del SMN |
-| **Imputación** | Un valor imputado no es una observación | Cada valor imputado se declara en la columna `origen_<variable>` (`IMPUTADO:<método>`) y en `<variable>_imputado` |
-| **Sobreinterpretar** | Confundir "marcado como atípico" con "error" | Los atípicos se marcan y se conservan; se revisan contra fuentes externas antes de concluir |
+| Malla meteorológica y reanálisis | No representa necesariamente el microclima de una parcela | Mostrar fuente, fechas y coordenadas de malla; no tratarlo como medición de estación |
+| Cobertura OSM voluntaria | Puede omitir mercados, comercios y usos de suelo | Denominar “ubicación mapeada”; nunca afirmar que compra un cultivo |
+| Áreas circulares de consulta | Pueden incluir zonas vecinas o mar | No presentarlas como límites municipales ni como censo |
+| Referencias locales | Pueden confundirse con precios/ofertas reales | Etiqueta “ilustrativo/no oficial” visible y fuente pendiente |
+| Compatibilidad climática | No incluye suelo, variedad, fenología ni manejo | No presentarla como recomendación agronómica o predicción de rendimiento |
+| Rutas públicas | Cobertura, latencia y disponibilidad variables | Separar distancia/tiempo estimados de tráfico y tarifas conectados |
+| Faltantes y anomalías | Un valor marcado no necesariamente es error | Conservar marcas, linaje y cuarentena; no borrar en silencio |
 
-## 5. Referencias consultadas (verificar vigencia antes de entregar)
-- Términos de Open-Meteo: https://open-meteo.com/en/terms · Licencia de datos: https://open-meteo.com/en/licence
-- Derechos de autor y licencia de OpenStreetMap: https://www.openstreetmap.org/copyright
-- Política de uso del servidor público de Overpass: wiki de OpenStreetMap, página *Overpass API*
-- [COMPLETAR: enlaces a los `robots.txt` leídos y fecha de lectura]
+## 5. Linaje, secretos y referencias consultadas
 
-## 6. Trazabilidad como práctica ética
-Un dato que no se puede rastrear no se puede corregir ni cuestionar. Por eso cada valor de la capa oro lleva su origen
-(`origen_<variable>`: archivo de bronce, huella SHA-256 y posición) o se declara derivado, y una prueba automática lo verifica
-en cada ejecución (`reporte_linaje.json`).
+Cada valor climático de Oro se rastrea al archivo Bronce mediante nombre,
+huella SHA-256, fila y fecha de ingesta; los valores imputados deben declarar el
+método. La puerta de calidad conserva registros inválidos en cuarentena con
+motivo. Gitleaks está configurado en CI; la revisión actual no encontró claves
+API asignadas en el código activo. Mantener TollGuru como secreto de servidor y
+no subir `.env.local`.
+
+Referencias consultadas:
+
+- Open-Meteo: <https://open-meteo.com/en/terms> ·
+  <https://open-meteo.com/en/licence> ·
+  <https://archive-api.open-meteo.com/robots.txt>.
+- OSM: <https://www.openstreetmap.org/copyright> ·
+  <https://operations.osmfoundation.org/policies/tiles/> ·
+  <https://overpass-api.de/robots.txt>.
+- Overpass API: <https://wiki.openstreetmap.org/wiki/Overpass_API>.
+- OSRM: <https://project-osrm.org/docs/v5.24.0/api/>.
+- TollGuru: <https://tollguru.com/toll-api>.
+- Frankfurter: <https://frankfurter.dev/>.
+
+Las políticas pueden cambiar; verificar las condiciones vigentes del endpoint,
+licencia y finalidad antes de cada despliegue público o comercial.

@@ -49,6 +49,13 @@
 * **Aprendizaje 1 (Necesidad real y operativa):** Las decisiones críticas del día a día (como la aplicación oportuna de fertilizantes, los esquemas de fumigación según el viento/humedad y la contratación de jornales de corte) dependen de un margen de anticipación de al menos 3 días con datos sumamente localizados para evitar pérdidas por mano de obra o daños al fruto (como en zarzamora).
 * **Aprendizaje 2 (Oportunidad del Observatorio):** Existe una clara disposición de los productores locales a adoptar e invertir en servicios de alertas tempranas verificadas, ya que los costos asociados a eventos imprevistos —como la resiembra, el re-trabajo de fumigación y el pago de jornales caídos por lluvia— superan por amplio margen el costo de una suscripción de inteligencia climática.
 
+**Nota de evidencia y privacidad:** el testimonio está anonimizado en este
+documento. El repositorio no contiene audio, datos identificables ni constancia
+de consentimiento; por ello la transcripción se considera un registro declarado
+por el equipo, no una evidencia independiente verificable. Confirmen
+consentimiento y exactitud con la persona entrevistada antes de reutilizarlo o
+publicarlo fuera del contexto académico.
+
 ---
 
 ## 3. Las Tres Preguntas Analíticas
@@ -64,12 +71,19 @@
 
 ### Fuente 1: Open-Meteo API (API REST)
 * **Estructura y formato:** Respuestas JSON con series temporales meteorológicas.
-* **Frecuencia:** Ingesta diaria automatizada.
-* **Análisis ético y legal:** Datos bajo licencia CC BY 4.0 (Uso libre con atribución). No requiere API Key ni procesa datos personales.
+* **Frecuencia:** Ingesta diaria automatizada para el uso académico actual.
+* **Términos y atribución:** La API gratuita de Open-Meteo es para uso no comercial y exige atribución CC BY 4.0. El proyecto debe conservar el enlace y declarar las transformaciones; un uso comercial exige un plan con permiso comercial.
+* **`robots.txt`:** `https://archive-api.open-meteo.com/robots.txt` fue consultado el 26 de noviembre de 2026 y devuelve `Disallow: /`. Esto no se interpreta como una autorización ni como permiso para rastrear páginas; el extractor usa el endpoint documentado y debe respetar sus términos, límites y atribución.
 
 ### Fuente 2: Servicio Meteorológico Nacional (SMN / CONAGUA)
-* **Estructura y formato:** Tablas HTML / Archivos CSV descargables.
-* **Análisis ético y legal (robots.txt):** Extracción respetando `robots.txt`, con `User-Agent` académico identificable (`TDL-ObservatorioClimatico/1.0`) y pausa de 1.5 segundos entre peticiones para no saturar servidores.
+* **Estado:** No está integrada ni hay captura SMN en Bronce. El adaptador solo se probó con datos sintéticos.
+* **Plan:** preferir un endpoint o conjunto de datos oficial documentado; registrar URL, licencia, términos y `robots.txt` vigentes, y solicitar autorización cuando corresponda antes de automatizar.
+* **Límite:** no extraer tablas HTML ni automatizar consultas al SMN hasta comprobar que el método y el volumen están permitidos. No se afirma que la política del SMN haya sido verificada.
+
+### Fuente 3 candidata: OpenStreetMap / Overpass API
+* **Uso previsto:** contexto geoespacial; no se guardó una captura real en esta entrega.
+* **Términos/licencia:** datos OSM bajo ODbL 1.0, con atribución y posibles obligaciones *share-alike* para bases derivadas sustanciales. Documentación: <https://wiki.openstreetmap.org/wiki/Overpass_API> y <https://www.openstreetmap.org/copyright>.
+* **`robots.txt`:** `https://overpass-api.de/robots.txt` fue consultado el 26 de noviembre de 2026 y devuelve `Disallow: /api/` y `Disallow: /munin/`. No se interpreta la respuesta como licencia o autorización contractual; no automatizar capturas hasta verificar directamente la política aplicable y el volumen permitido.
 
 ---
 

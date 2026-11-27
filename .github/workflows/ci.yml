@@ -24,7 +24,7 @@ jobs:
         run: ruff check pipeline tests
 
       - name: Pruebas con cobertura mínima de 60 %
-        run: pytest --cov=pipeline --cov-report=term-missing --cov-fail-under=60
+        run: pytest tests --cov=pipeline --cov-report=term-missing --cov-fail-under=60
 
       - name: Puerta de calidad de datos (corre el pipeline sobre bronce)
         run: |

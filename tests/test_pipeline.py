@@ -104,6 +104,7 @@ def test_consolidar_fuentes_prioridad_y_diferencia(df_valido):
     assert len(c) == 3 and (c["n_fuentes"] == 2).all()
     assert c.loc[0, "tmax_c"] == pytest.approx(base["tmax_c"].iloc[0])        # cae a open-meteo
     assert c.loc[1, "tmax_c"] == pytest.approx(base["tmax_c"].iloc[1] + 1.0)  # gana smn
+    assert pd.isna(c.loc[0, "dif_tmax_c"])                                   # solo un valor disponible
     assert c.loc[1, "dif_tmax_c"] == pytest.approx(1.0)
     assert c["viento_max_kmh"].notna().all()                                  # viento solo existe en open-meteo
 

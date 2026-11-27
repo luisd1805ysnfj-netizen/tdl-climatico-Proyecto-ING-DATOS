@@ -18,7 +18,7 @@ agrícolas. El conjunto diario se encuentra en `data/oro/clima_oro_diario.csv` y
 
 - Fuente meteorológica: Open-Meteo Archive.
 - Fuente geoespacial: implementación de OpenStreetMap vía Overpass, sin captura real incluida actualmente.
-- Licencias: Open-Meteo CC BY 4.0; OpenStreetMap ODbL 1.0 donde se publique contenido derivado.
+- Licencias: Open-Meteo CC BY 4.0 con términos de API gratuita no comercial; OpenStreetMap ODbL 1.0 donde se publique contenido derivado. La licencia del proyecto no amplía derechos sobre los datos fuente.
 
 ## Recolección y procesamiento
 

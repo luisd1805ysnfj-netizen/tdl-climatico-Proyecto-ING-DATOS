@@ -1,25 +1,40 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getClimateOutlook } from '../services/openMeteo'
 
-export function useClimateOutlook(location, fallback) {
-  const [outlook, setOutlook] = useState(null)
-  const [loading, setLoading] = useState(false)
+export function useClimateOutlook(location) {
+  const [result, setResult] = useState({ requestKey: '', outlook: null, error: '' })
+  const [refreshKey, setRefreshKey] = useState(0)
+  const refresh = useCallback(() => setRefreshKey((value) => value + 1), [])
+  const latitude = location?.latitude
+  const longitude = location?.longitude
+  const requestKey = Number.isFinite(latitude) && Number.isFinite(longitude)
+    ? `${latitude},${longitude}:${refreshKey}`
+    : ''
 
   useEffect(() => {
-    if (!location) return undefined
-    const controller = new AbortController()
-    setOutlook(null)
-    setLoading(true)
-    getClimateOutlook({ ...location, fallback }, controller.signal)
-      .then(setOutlook)
-      .catch((error) => {
-        if (error.name !== 'AbortError') console.error('Error al consultar tendencia climática:', error)
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false)
-      })
-    return () => controller.abort()
-  }, [location?.latitude, location?.longitude, fallback?.temperature, fallback?.humidity])
+    if (!requestKey) return undefined
 
-  return { outlook, loading }
+    const controller = new AbortController()
+    getClimateOutlook({ latitude, longitude }, controller.signal)
+      .then((outlook) => setResult({ requestKey, outlook, error: '' }))
+      .catch((requestError) => {
+        if (requestError.name !== 'AbortError') {
+          setResult({
+            requestKey,
+            outlook: null,
+            error: requestError instanceof Error ? requestError.message : String(requestError),
+          })
+        }
+      })
+
+    return () => controller.abort()
+  }, [latitude, longitude, requestKey])
+
+  const isCurrentRequest = result.requestKey === requestKey
+  return {
+    outlook: isCurrentRequest ? result.outlook : null,
+    loading: Boolean(requestKey) && !isCurrentRequest,
+    error: isCurrentRequest ? result.error : '',
+    refresh,
+  }
 }

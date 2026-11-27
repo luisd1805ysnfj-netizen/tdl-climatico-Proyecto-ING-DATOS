@@ -37,6 +37,10 @@ jobs:
         if: steps.captura.outcome == 'success'
         run: python -m pipeline.run_pipeline
 
+      - name: Construir dataset curado E3
+        if: steps.captura.outcome == 'success'
+        run: python scripts/curate_e3.py
+
       - name: Guardar datos y bitácora en el repositorio
         if: always()
         run: |

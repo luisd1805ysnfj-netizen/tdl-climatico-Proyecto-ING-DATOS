@@ -193,8 +193,9 @@ def consolidar_fuentes(df, prioridad=None):
         base[f"ref_{v}"] = g[f"_ref_{v}"].first()
     base["n_fuentes"] = g.size()
     base["fuentes_usadas"] = g["fuente"].agg("+".join)
+    limites = g[cfg.VARIABLES].agg(["min", "max", "count"])
     for v in cfg.VARIABLES:
-        rng = g[v].agg(lambda s: s.max() - s.min() if s.notna().sum() > 1 else np.nan)
-        base[f"dif_{v}"] = rng
+        diferencia = limites[(v, "max")] - limites[(v, "min")]
+        base[f"dif_{v}"] = diferencia.where(limites[(v, "count")] > 1)
     base = base.drop(columns=["_rk", *[f"_ref_{v}" for v in cfg.VARIABLES]]).reset_index()
     return base

@@ -198,7 +198,7 @@ def test_puerta_geoespacial_manda_lo_invalido_a_cuarentena_con_motivo(bronce_osm
 def test_osm_id_repetido_se_rechaza(bronce_osm):
     parcelas, _ = geo.cargar_osm_bronce(bronce_osm)
     repetido = pd.concat([parcelas, parcelas.head(1)], ignore_index=True)
-    validas, cuarentena = geo.validar_parcelas(repetido)
+    _validas, cuarentena = geo.validar_parcelas(repetido)
     assert len(cuarentena) == 1 and "unicidad" in cuarentena["motivo_rechazo"].iloc[0]
 
 

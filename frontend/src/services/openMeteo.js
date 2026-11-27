@@ -1,67 +1,53 @@
-const monthNames = new Intl.DateTimeFormat('es', { month: 'short', timeZone: 'UTC' })
+const CURRENT_URL = 'https://api.open-meteo.com/v1/forecast'
+const SEASONAL_URL = 'https://seasonal-api.open-meteo.com/v1/seasonal'
+const HISTORICAL_URL = 'https://archive-api.open-meteo.com/v1/archive'
 
-const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
+const numberOrNull = (value) => Number.isFinite(value) ? value : null
 const average = (values) => values.length
   ? values.reduce((sum, value) => sum + value, 0) / values.length
   : null
 
-function monthLabel(date) {
-  const label = monthNames.format(date).replace('.', '')
-  return label.charAt(0).toUpperCase() + label.slice(1)
+function formatMonth(period) {
+  const date = new Date(`${period}-01T00:00:00Z`)
+  return new Intl.DateTimeFormat('es-MX', {
+    month: 'short',
+    year: '2-digit',
+    timeZone: 'UTC',
+  }).format(date).replace('.', '')
 }
 
-function seasonalBaseline(latitude, month) {
-  const warmestMonth = latitude < 0 ? 1 : 7
-  const radians = (2 * Math.PI * (month - warmestMonth)) / 12
-  const seasonalAmplitude = clamp(Math.abs(latitude) * 0.22, 1, 11)
-  return 27 - Math.min(Math.abs(latitude), 55) * 0.32 + seasonalAmplitude * Math.cos(radians)
-}
-
-function fallbackOutlook(latitude, humidity, currentTemperature) {
-  const now = new Date()
-  return Array.from({ length: 5 }, (_, index) => {
-    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + index, 1))
-    const month = date.getUTCMonth() + 1
-    const historical = seasonalBaseline(latitude, month)
-    const currentBias = clamp(currentTemperature - seasonalBaseline(latitude, now.getUTCMonth() + 1), -3, 3)
-    const forecast = historical + currentBias * (1 - index * 0.13)
-    return {
-      month: monthLabel(date),
-      historico: Math.round(historical * 10) / 10,
-      predicción: Math.round(forecast * 10) / 10,
-      humedad: Math.round(clamp(humidity + 7 * Math.sin((month / 12) * 2 * Math.PI), 35, 95)),
-      lluvia: null,
-    }
-  })
-}
-
-function describeClimate(latitude, temperature, humidity) {
-  const winterMonths = latitude < 0 ? [5, 6, 7] : [11, 0, 1]
-  const summerMonths = latitude < 0 ? [11, 0, 1] : [5, 6, 7]
-  const month = new Date().getUTCMonth()
-  if (temperature < 12 && humidity < 55) return 'Frío y seco'
-  if (humidity >= 75 && temperature >= 22) return 'Tropical húmedo'
-  if (temperature < 16 && humidity >= 65) return 'Frío y húmedo'
-  if (humidity < 50 && temperature >= 25) return 'Cálido y seco'
-  if (winterMonths.includes(month) && temperature < 20) return 'Invierno templado'
-  if (summerMonths.includes(month) && temperature >= 22) return 'Verano cálido'
-  return 'Templado y estable'
-}
-
-export function createFallbackClimateOutlook(latitude, fallback) {
-  const temperature = fallback?.temperature ?? seasonalBaseline(latitude, new Date().getUTCMonth() + 1)
-  const humidity = fallback?.humidity ?? clamp(68 - Math.abs(latitude) * 0.2, 45, 80)
-  const chart = fallbackOutlook(latitude, humidity, temperature)
-  const temps = chart.map((item) => item.predicción)
-  return {
-    chart,
-    range: `${Math.round(Math.min(...temps))}° — ${Math.round(Math.max(...temps))}°C`,
-    summary: describeClimate(latitude, average(temps), humidity),
-    humidity: Math.round(humidity),
-    current: fallback ?? null,
-    source: 'Estimación estacional por latitud (sin conexión)',
-    isFallback: true,
+export function describeWeatherCode(code) {
+  const descriptions = {
+    0: 'Despejado',
+    1: 'Mayormente despejado',
+    2: 'Parcialmente nublado',
+    3: 'Nublado',
+    45: 'Niebla',
+    48: 'Niebla engelante',
+    51: 'Llovizna ligera',
+    53: 'Llovizna moderada',
+    55: 'Llovizna intensa',
+    56: 'Llovizna engelante ligera',
+    57: 'Llovizna engelante intensa',
+    61: 'Lluvia ligera',
+    63: 'Lluvia moderada',
+    65: 'Lluvia intensa',
+    66: 'Lluvia engelante ligera',
+    67: 'Lluvia engelante intensa',
+    71: 'Nevada ligera',
+    73: 'Nevada moderada',
+    75: 'Nevada intensa',
+    77: 'Granos de nieve',
+    80: 'Chubascos ligeros',
+    81: 'Chubascos moderados',
+    82: 'Chubascos intensos',
+    85: 'Chubascos de nieve ligeros',
+    86: 'Chubascos de nieve intensos',
+    95: 'Tormenta',
+    96: 'Tormenta con granizo ligero',
+    99: 'Tormenta con granizo intenso',
   }
+  return Number.isInteger(code) ? descriptions[code] ?? null : null
 }
 
 async function fetchJson(url, signal) {
@@ -70,132 +56,244 @@ async function fetchJson(url, signal) {
   return response.json()
 }
 
-async function fetchCurrentWeather(latitude, longitude, signal) {
-  const params = new URLSearchParams({
+function weatherParams(latitude, longitude, fields) {
+  return new URLSearchParams({
     latitude: String(latitude),
     longitude: String(longitude),
     timezone: 'auto',
-    current: 'temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,apparent_temperature,weather_code',
+    ...fields,
   })
-  const result = await fetchJson(`https://api.open-meteo.com/v1/forecast?${params}`, signal)
+}
+
+async function fetchCurrentWeather(latitude, longitude, signal) {
+  const params = weatherParams(latitude, longitude, {
+    current: [
+      'temperature_2m',
+      'relative_humidity_2m',
+      'precipitation',
+      'wind_speed_10m',
+      'apparent_temperature',
+      'weather_code',
+    ].join(','),
+  })
+  const result = await fetchJson(`${CURRENT_URL}?${params}`, signal)
   const current = result.current
-  if (!current) throw new Error('Open-Meteo no devolvió condiciones actuales')
+  if (!current || typeof current !== 'object') {
+    throw new Error('Open-Meteo no devolvió condiciones actuales')
+  }
+
+  const weatherCode = numberOrNull(current.weather_code)
   return {
-    temperature: Math.round(current.temperature_2m),
-    humidity: Math.round(current.relative_humidity_2m),
-    rain: Math.round(current.precipitation * 10) / 10,
-    wind: Math.round(current.wind_speed_10m),
-    feels: Math.round(current.apparent_temperature),
-    condition: describeWeatherCode(current.weather_code),
+    temperature: numberOrNull(current.temperature_2m),
+    humidity: numberOrNull(current.relative_humidity_2m),
+    precipitation: numberOrNull(current.precipitation),
+    wind: numberOrNull(current.wind_speed_10m),
+    feelsLike: numberOrNull(current.apparent_temperature),
+    weatherCode,
+    condition: describeWeatherCode(weatherCode),
+    observedAt: typeof current.time === 'string' ? current.time : null,
+    timezone: typeof result.timezone === 'string' ? result.timezone : null,
   }
 }
 
-function describeWeatherCode(code) {
-  if ([0].includes(code)) return 'Despejado'
-  if ([1, 2].includes(code)) return 'Parcialmente nublado'
-  if ([3].includes(code)) return 'Nublado'
-  if ([45, 48].includes(code)) return 'Neblina'
-  if ([51, 53, 55, 56, 57].includes(code)) return 'Llovizna'
-  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return 'Lluvia'
-  if ([71, 73, 75, 77, 85, 86].includes(code)) return 'Nieve'
-  if ([95, 96, 99].includes(code)) return 'Tormenta'
-  return 'Condiciones variables'
+async function fetchSeasonalForecast(latitude, longitude, signal) {
+  const params = weatherParams(latitude, longitude, {
+    forecast_days: '214',
+    daily: [
+      'temperature_2m_mean',
+      'relative_humidity_2m_mean',
+      'precipitation_sum',
+      'wind_speed_10m_mean',
+      'weather_code',
+    ].join(','),
+  })
+  const result = await fetchJson(`${SEASONAL_URL}?${params}`, signal)
+  if (!result.daily?.time?.length) {
+    throw new Error('Open-Meteo no devolvió el pronóstico estacional')
+  }
+  return {
+    monthly: aggregateDailyData(result.daily),
+    periodStart: result.daily.time[0],
+    periodEnd: result.daily.time[result.daily.time.length - 1],
+  }
 }
 
-export async function getClimateOutlook({ latitude, longitude, fallback }, signal) {
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    throw new TypeError('Se requieren coordenadas válidas para consultar el clima')
-  }
-
-  const today = new Date()
-  const endDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 2))
-  const startDate = new Date(Date.UTC(endDate.getUTCFullYear() - 4, 0, 1))
+async function fetchHistoricalWeather(latitude, longitude, signal) {
+  const now = new Date()
+  const endDate = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate() - 5,
+  ))
+  const startDate = new Date(Date.UTC(endDate.getUTCFullYear() - 5, endDate.getUTCMonth(), endDate.getUTCDate()))
   const formatDate = (date) => date.toISOString().slice(0, 10)
-  const params = new URLSearchParams({
-    latitude: String(latitude),
-    longitude: String(longitude),
-    timezone: 'auto',
-    daily: 'temperature_2m_mean,precipitation_sum',
-    hourly: 'relative_humidity_2m',
+  const params = weatherParams(latitude, longitude, {
+    daily: [
+      'temperature_2m_mean',
+      'relative_humidity_2m_mean',
+      'precipitation_sum',
+      'wind_speed_10m_mean',
+    ].join(','),
     start_date: formatDate(startDate),
     end_date: formatDate(endDate),
   })
+  const result = await fetchJson(`${HISTORICAL_URL}?${params}`, signal)
+  if (!result.daily?.time?.length) {
+    throw new Error('Open-Meteo no devolvió datos históricos')
+  }
+  const currentMonth = now.toISOString().slice(0, 7)
+  const monthly = aggregateDailyData(result.daily)
+    .filter((month) => month.period < currentMonth)
+    .slice(-12)
+  return {
+    monthly,
+    periodStart: result.daily.time[0],
+    periodEnd: result.daily.time[result.daily.time.length - 1],
+  }
+}
 
-  try {
-    const [history, current] = await Promise.all([
-      fetchJson(`https://archive-api.open-meteo.com/v1/archive?${params}`, signal),
-      fetchCurrentWeather(latitude, longitude, signal).catch((error) => {
-        if (error.name === 'AbortError') throw error
-        return fallback ?? null
-      }),
-    ])
-    const daily = history.daily
-    if (!daily?.time?.length || !daily.temperature_2m_mean?.length) throw new Error('Open-Meteo no devolvió serie histórica')
+function aggregateDailyData(daily) {
+  const groups = new Map()
+  const fields = [
+    ['temperature_2m_mean', 'temperatures'],
+    ['relative_humidity_2m_mean', 'humidities'],
+    ['precipitation_sum', 'precipitations'],
+    ['wind_speed_10m_mean', 'winds'],
+  ]
 
-    const now = new Date()
-    const months = Array.from({ length: 5 }, (_, index) => new Date(Date.UTC(
-      now.getUTCFullYear(), now.getUTCMonth() + index, 1,
-    )))
-    const outlook = months.map((date, index) => {
-      const month = date.getUTCMonth() + 1
-      const historicalValues = daily.time.reduce((values, day, i) => {
-        const parsed = new Date(`${day}T00:00:00Z`)
-        if (parsed.getUTCMonth() + 1 === month && Number.isFinite(daily.temperature_2m_mean[i])) {
-          values.push(daily.temperature_2m_mean[i])
-        }
-        return values
-      }, [])
-      const historicalMean = average(historicalValues) ?? seasonalBaseline(latitude, month)
-      const currentBias = current?.temperature == null
-        ? 0
-        : clamp(current.temperature - seasonalBaseline(latitude, now.getUTCMonth() + 1), -3, 3)
-      const historicalHumidity = average((daily.hourly?.time ?? []).reduce((values, hour, i) => {
-        if (Number(hour.slice(5, 7)) === month &&
-            Number.isFinite(daily.hourly.relative_humidity_2m[i])) {
-          values.push(daily.hourly.relative_humidity_2m[i])
-        }
-        return values
-      }, [])) ?? current?.humidity ?? 65
-      const currentMonthHumidity = average((daily.hourly?.time ?? []).reduce((values, hour, i) => {
-        if (Number(hour.slice(5, 7)) === now.getUTCMonth() + 1 &&
-            Number.isFinite(daily.hourly.relative_humidity_2m[i])) {
-          values.push(daily.hourly.relative_humidity_2m[i])
-        }
-        return values
-      }, [])) ?? current?.humidity ?? historicalHumidity
-      const humidityBias = current?.humidity == null ? 0 : current.humidity - currentMonthHumidity
-      return {
-        month: monthLabel(date),
-        historico: Math.round(historicalMean * 10) / 10,
-        predicción: Math.round((historicalMean + currentBias * (1 - index * 0.13)) * 10) / 10,
-        humedad: Math.round(clamp(historicalHumidity + humidityBias * (1 - index * 0.13), 35, 95)),
-        lluvia: average(daily.time.reduce((values, day, i) => {
-          if (new Date(`${day}T00:00:00Z`).getUTCMonth() + 1 === month &&
-              Number.isFinite(daily.precipitation_sum?.[i])) values.push(daily.precipitation_sum[i])
-          return values
-        }, [])),
+  daily.time.forEach((date, index) => {
+    const period = date.slice(0, 7)
+    if (!/^\d{4}-\d{2}$/.test(period)) return
+    let group = groups.get(period)
+    if (!group) {
+      group = {
+        period,
+        temperatures: [],
+        humidities: [],
+        precipitations: [],
+        winds: [],
+        weatherCodes: new Map(),
+        days: 0,
       }
-    })
+      groups.set(period, group)
+    }
+    group.days += 1
+    for (const [key, valuesKey] of fields) {
+      const value = daily[key]?.[index]
+      if (!Number.isFinite(value)) continue
+      group[valuesKey].push(value)
+    }
+    const weatherCode = daily.weather_code?.[index]
+    if (Number.isInteger(weatherCode)) {
+      group.weatherCodes.set(weatherCode, (group.weatherCodes.get(weatherCode) ?? 0) + 1)
+    }
+  })
 
-    const temps = outlook.map((item) => item.predicción)
-    const humidity = average(outlook.map((item) => item.humedad)) ?? current?.humidity ?? 65
+  return [...groups.values()].map((group) => {
+    const dominantWeatherCode = [...group.weatherCodes.entries()]
+      .sort((left, right) => right[1] - left[1])[0]?.[0] ?? null
     return {
-      chart: outlook,
-      range: `${Math.round(Math.min(...temps))}° — ${Math.round(Math.max(...temps))}°C`,
-      summary: describeClimate(latitude, average(temps), humidity),
-      humidity: Math.round(humidity),
-      current: current ?? fallback,
-      source: 'Open-Meteo Archive · normal estacional de 5 años',
-      isFallback: false,
+      period: group.period,
+      month: formatMonth(group.period),
+      temperature: average(group.temperatures),
+      humidity: average(group.humidities),
+      precipitation: group.precipitations.length
+        ? group.precipitations.reduce((sum, value) => sum + value, 0)
+        : null,
+      wind: average(group.winds),
+      weatherCode: dominantWeatherCode,
+      condition: describeWeatherCode(dominantWeatherCode),
+      days: group.days,
     }
-  } catch (error) {
-    if (error.name === 'AbortError') throw error
-    let current = fallback
-    try {
-      current = await fetchCurrentWeather(latitude, longitude, signal)
-    } catch (currentError) {
-      if (currentError.name === 'AbortError') throw currentError
-    }
-    return createFallbackClimateOutlook(latitude, current)
+  })
+}
+
+function makeChart(history, seasonal) {
+  const historicRows = (history?.monthly ?? []).map((month) => ({
+    ...month,
+    historico: month.temperature,
+    predicción: null,
+    humedadHistorica: month.humidity,
+    humedadPronostico: null,
+  }))
+  const forecastRows = (seasonal?.monthly ?? []).map((month) => ({
+    ...month,
+    historico: null,
+    predicción: month.temperature,
+    humedadHistorica: null,
+    humedadPronostico: month.humidity,
+  }))
+  return [...historicRows, ...forecastRows]
+}
+
+function sourceResult(name, url, result) {
+  const connected = result.status === 'fulfilled'
+  return {
+    name,
+    url,
+    connected,
+    error: connected ? '' : result.reason instanceof Error
+      ? result.reason.message
+      : String(result.reason),
+  }
+}
+
+export async function getClimateOutlook({ latitude, longitude }, signal) {
+  if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90 ||
+      !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
+    throw new TypeError('Se requieren coordenadas válidas para consultar el clima')
+  }
+
+  const results = await Promise.allSettled([
+    fetchCurrentWeather(latitude, longitude, signal),
+    fetchSeasonalForecast(latitude, longitude, signal),
+    fetchHistoricalWeather(latitude, longitude, signal),
+  ])
+  if (signal?.aborted) {
+    const error = new Error('Consulta cancelada')
+    error.name = 'AbortError'
+    throw error
+  }
+
+  const [currentResult, seasonalResult, historicalResult] = results
+  const current = currentResult.status === 'fulfilled' ? currentResult.value : null
+  const seasonal = seasonalResult.status === 'fulfilled' ? seasonalResult.value : null
+  const historical = historicalResult.status === 'fulfilled' ? historicalResult.value : null
+  const sources = {
+    current: sourceResult(
+      'Open-Meteo Forecast API',
+      'https://open-meteo.com/en/docs',
+      currentResult,
+    ),
+    seasonal: sourceResult(
+      'Open-Meteo Seasonal Forecast API · ECMWF',
+      'https://open-meteo.com/en/docs/seasonal-forecast-api',
+      seasonalResult,
+    ),
+    historical: sourceResult(
+      'Open-Meteo Historical Weather API · reanalysis',
+      'https://open-meteo.com/en/docs/historical-weather-api',
+      historicalResult,
+    ),
+  }
+
+  if (!current && !seasonal && !historical) {
+    throw new Error(Object.values(sources).map(({ error }) => error).join(' · '))
+  }
+
+  const forecastTemperatures = (seasonal?.monthly ?? [])
+    .map(({ temperature }) => temperature)
+    .filter(Number.isFinite)
+  const range = forecastTemperatures.length
+    ? `${Math.round(Math.min(...forecastTemperatures))}° — ${Math.round(Math.max(...forecastTemperatures))}°C`
+    : null
+
+  return {
+    current,
+    seasonal,
+    historical,
+    chart: makeChart(historical, seasonal),
+    range,
+    sources,
   }
 }

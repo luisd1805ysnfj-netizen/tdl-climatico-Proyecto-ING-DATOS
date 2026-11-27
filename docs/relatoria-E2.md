@@ -1,30 +1,33 @@
 # Relatoría E2 · Observatorio de Inteligencia Climática (Colima, Tecomán y Manzanillo)
 
-Equipo: Luis · Luis David (integrante principal registrado en la bitácora de calidad) · Periodo: 17 al 23 de noviembre de 2026
+Equipo registrado en E0: Luis Alfredo Ruiz Fuentes y Ariadna Andrea Muñoz Andrade · Periodo documentado: 17 al 27 de noviembre de 2026
 
-> Esta versión consolida datos verificables. Los nombres de integrantes, horas individuales y tablero público siguen requiriendo
-> información del equipo porque no están presentes de forma inequívoca en el repositorio.
+> Los integrantes constan en E0. Las horas individuales y una URL de tablero
+> público no están registradas, por lo que no se asignan ni inventan.
 
 ## 1. Qué nos propusimos
-Integrar una fuente especializada geoespacial al observatorio, garantizar que **cada valor de la capa oro** se pueda rastrear
-hasta su archivo de bronce y su fecha de ingesta, y documentar la ética y legalidad de las dos fuentes. Metas medibles:
-(a) un archivo `osm_agricola_*` por municipio que pase la puerta de calidad; (b) 100 % de los valores de oro con origen verificable
-o declarado como imputado; (c) cero etiquetas personales en bronce.
+Integrar una fuente especializada al observatorio, garantizar que **cada valor de
+la capa oro** se pueda rastrear hasta su archivo de bronce y fecha de ingesta, y
+documentar ética y legalidad. Open-Meteo está integrado; el extractor geoespacial
+OSM se conserva como experimental y no tiene captura real. Metas: (a) 100 % de
+los valores de oro con origen verificable o imputado declarado; (b) cero
+etiquetas personales en bronce; (c) no automatizar fuentes sin revisar sus
+términos y límites.
 
 ## 2. Qué hicimos
 | Fecha | Qué | Quién | Horas |
 |---|---|---|---|
 | 17-nov | Elección de OpenStreetMap sobre DENUE y diseño del linaje | Equipo | Pendiente de bitácora individual |
 | 17-nov | Huella SHA-256, posición y referencia por registro; verificación automática | Equipo | Pendiente de bitácora individual |
-| 17-nov | Extractor de Overpass con lista blanca, reintentos y espejo; pruebas offline | Equipo | Pendiente de bitácora individual |
+| 17-nov | Extractor de Overpass con lista blanca, reintentos y pruebas offline | Equipo | Pendiente de bitácora individual; no hay captura real |
 | 23-nov | Consolidación final de E2 y publicación del commit `E2_Final` | Equipo | Pendiente de bitácora individual |
 | 26-nov | Regeneración y verificación del pipeline con datos actuales | Equipo | 13,176 valores sin fallos de linaje |
-| Pendiente | Captura real de OSM y creación del tag oficial `e2` | Equipo | Acción pendiente |
+| 27-nov | Revisión documental de E2 y límites de las fuentes | Revisión del repositorio | Sin captura real OSM; el tag `e2` ya existe, no se movió |
 
 ## 3. Qué decidimos y por qué
-- **OpenStreetMap sobre DENUE.** DENUE es más oficial, pero exige registrar un token y protegerlo como secreto; OSM no pide registro y
-  permite consultar polígonos de uso agrícola con un filtro de radio en el servidor. Descartamos las redes sociales y las APIs con
-  OAuth porque no responden a nuestra pregunta (riesgo agrícola) y agregan riesgo de privacidad.
+- **Open-Meteo integrado; OSM experimental.** El flujo de clima está operativo y trazable. El extractor OSM usa una API documentada,
+  pero no se capturaron datos reales; que no requiera token no demuestra autorización o capacidad para despliegue. DENUE tampoco está
+  conectado y necesitaría verificar su proceso de acceso y condiciones.
 - **Círculo de 10 km alrededor de la celda de clima, no el límite municipal.** Así la capa agrícola habla del mismo punto que el
   clima (usamos `lat_grid`/`lon_grid`, no las coordenadas pedidas). Descartamos el límite municipal por no depender aún del Marco
   Geoestadístico; la contrapartida (el círculo de Manzanillo incluye mar) está declarada en la ética y en el tablero.
@@ -34,15 +37,16 @@ o declarado como imputado; (c) cero etiquetas personales en bronce.
   archivo daría huellas distintas en Windows y en el CI de GitHub (Linux) y el linaje se rompería. Normalizamos antes de calcular el SHA-256.
 - **El linaje detiene el pipeline.** Si un valor no se puede rastrear, `run_pipeline` falla: preferimos un rojo visible a un oro
   que no podemos defender.
-- **Capturar OSM una vez al mes y no a diario.** El uso de suelo cambia despacio y Overpass es un servicio público para bajo volumen.
+- **No capturar OSM todavía.** Aunque el uso de suelo cambia despacio, `robots.txt` del endpoint público presenta `Disallow: /api/`.
+  Antes de ejecutar la captura se debe confirmar la política aplicable y el volumen permitido o usar un servicio/instancia autorizada.
 
 ## 4. Qué salió mal y cómo lo corregimos
 - Defecto #1 (interfaz, código → pruebas): al agregar columnas de fecha al oro mensual, `.round(3)` sobre todo el
   DataFrame empezó a emitir una advertencia de pandas porque no aplica a fechas. Se redondean ahora solo las columnas numéricas.
 - Defecto #2 (datos, diseño → revisión): el porcentaje de cobertura agrícola de Manzanillo se calcula sobre un círculo que
   incluye mar, así que subestima la cobertura en tierra. No se corrigió en esta etapa; se documentó como sesgo y queda como mejora.
-- Defecto #3 (entrega, estructura): parte de E2 quedó dentro de carpetas anidadas. Se corrigió copiando el código funcional a la raíz y verificándolo con 66 pruebas.
-- Defecto #4 (publicación): no existía el tag `e2` ni archivos reales de captura OSM. El tag se completará antes de cada entrega y la captura se hará solo bajo una revisión explícita de términos.
+- Defecto #3 (entrega, estructura): parte de E2 quedó dentro de carpetas anidadas. Se corrigió copiando el código funcional a la raíz. La verificación local actual de la suite raíz registra 74 aprobadas y 4 omitidas.
+- Defecto #4 (publicación): en una revisión anterior no existía el tag `e2` ni archivos reales OSM. El tag `e2` ya existe en el repositorio actual; no se movió durante esta auditoría. La captura real sigue pendiente de revisión de política y términos.
 
 ## 5. Qué aprendimos
 **Ingeniería de Datos.** Un linaje que no se puede comprobar es una promesa. Convertirlo en una prueba que abre los archivos y compara
@@ -58,8 +62,8 @@ de etiquetas es evidencia de minimización y *confidencialidad*.
 
 ## 6. Evidencias
 - Commits: E2_Final (`91bd698`); consolidación posterior en el commit de correcciones E2.
-- Captura real de OSM: pendiente. No hay archivos `osm_agricola_*.json` ni `bitacora_osm.csv` reales; las pruebas OSM son offline.
-- Pruebas: [`tests/test_linaje.py`](../tests/test_linaje.py) · [`tests/test_osm_offline.py`](../tests/test_osm_offline.py) · Resultado local: 66 aprobadas y 4 omitidas.
+- Captura real de OSM: pendiente. No hay archivos `osm_agricola_*.json` ni `bitacora_osm.csv` reales; las pruebas OSM son offline. La aplicación web sí consulta Overpass para ubicaciones mapeadas, con caché en memoria del navegador; no se presenta esa consulta como una captura OSM guardada.
+- Pruebas: [`tests/test_linaje.py`](../tests/test_linaje.py) · [`tests/test_osm_offline.py`](../tests/test_osm_offline.py) · Resultado local actual: 74 aprobadas y 4 omitidas.
 - Reporte de linaje: [`data/oro/reporte_linaje.json`](../data/oro/reporte_linaje.json)
 - Mapa: [`tablero/mapa_agricola.html`](../tablero/mapa_agricola.html)
 

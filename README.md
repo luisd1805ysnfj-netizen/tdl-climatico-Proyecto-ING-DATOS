@@ -10,7 +10,9 @@ El repositorio integra Open-Meteo, limpieza de datos, linaje verificable y una f
 pip install -r requirements.txt
 python -m pipeline.run_pipeline
 pytest tests -q
-streamlit run tablero/app.py
+cd frontend
+npm install
+npm run dev
 ```
 
 ## Estado verificable
@@ -20,7 +22,8 @@ streamlit run tablero/app.py
 - 111 filas mensuales en oro.
 - 13,176 valores revisados por linaje y 0 fallos.
 - Dataset curado E3: 3294 filas × 29 columnas; sin nulos en los campos publicados.
-- Suite raíz: 74 pruebas aprobadas y 4 omitidas.
+- Suite raíz: 74 pruebas aprobadas y 3 omitidas.
+- Cobertura real de `pipeline/`: 86.75 %.
 
 ## Entregas
 

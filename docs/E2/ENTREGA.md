@@ -27,16 +27,16 @@ Equipo registrado en E0: Luis Alfredo Ruiz Fuentes y Ariadna Andrea Muñoz Andra
 
 | Criterio de la rúbrica | Evidencia (enlace) | Nota del equipo |
 |---|---|---|
-| Diseño y principios (factorial 2³) | No entregado | No hay diseño ejecutado ni hipótesis documentadas en esta versión. |
-| Dos factores con interacción | No entregado | No se calculó interacción factorial. |
-| Completo vs. fraccionado | No entregado | No se documentó resolución ni comparación de diseños. |
-| Análisis y confirmación | No entregado | No hay ANOVA ni modelo equivalente. |
+| Diseño observacional factorial | [`laboratorio/e2_factorial.py`](../../laboratorio/e2_factorial.py) · [`resultados_e2.json`](../../laboratorio/resultados_e2.json) | Se analizan municipio y temporada como factores sobre 3,294 observaciones reales. No es experimento aleatorizado ni corrida agrícola. |
+| Dos factores con interacción | [`laboratorio/e2_factorial.py`](../../laboratorio/e2_factorial.py) | ANOVA tipo II con interacción municipio × temporada ejecutado sobre precipitación. |
+| Completo vs. fraccionado | [`laboratorio/e2_factorial.py`](../../laboratorio/e2_factorial.py) | Matriz completa 3×4 documentada; fraccionado y alias pendientes porque no existe experimento controlado. |
+| Análisis y confirmación | [`resultados_e2.json`](../../laboratorio/resultados_e2.json) | Supuestos residuales ejecutados; corrida de confirmación pendiente. |
 
 ## Calidad en los Sistemas de Información
 
 | Criterio de la rúbrica | Evidencia (enlace) | Nota del equipo |
 |---|---|---|
-| Evaluación ISO/IEC 25010 | Evidencia parcial: 74 pruebas aprobadas, 4 omitidas; benchmark E3 reproducible | El tiempo de replay se midió; `tracemalloc` representa asignaciones Python, no RAM total. |
+| Evaluación ISO/IEC 25010 | Evidencia parcial: 74 pruebas aprobadas, 3 omitidas; benchmark E3 reproducible | El tiempo de replay se midió; `tracemalloc` representa asignaciones Python, no RAM total. |
 | Evaluación ISO/IEC 25012 | Evidencia parcial: linaje 100 % trazable y 0 fallos | Cubre precisión, trazabilidad y consistencia sobre la capa oro. |
 | Antecedentes normativos | [`docs/etica-datos.md`](../etica-datos.md) | Documenta licencias, privacidad, sesgos y uso académico. |
 | Auditoría cruzada | Pendiente de acta | Periodo objetivo del 19 al 23 de noviembre de 2026. |
@@ -50,9 +50,11 @@ No se consultó el tracker de GitHub durante esta auditoría; no se afirma que n
 ## Cómo reproducir
 ```bash
 pip install -r requirements.txt
-python -m pipeline.run_pipeline       # bronce -> plata -> oro, linaje y mapa
+python -m pipeline.run_pipeline       # bronce -> plata -> oro y linaje
 pytest tests --cov=pipeline            # pruebas offline; incluye OSM simulado
-streamlit run tablero/app.py          # tablero
+cd frontend
+npm install
+npm run dev                           # interfaz React principal
 ```
 
 No ejecutar `python -m extractors.osm_overpass` hasta confirmar la política

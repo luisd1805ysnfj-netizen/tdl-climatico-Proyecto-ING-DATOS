@@ -1,6 +1,6 @@
 # Entrega E3 · Observatorio Climático y Agrícola
 
-**Estado:** candidata de entrega; tag Git `e3` pendiente de revisión y publicación.
+**Estado:** implementación técnica existente; el tag Git `e3` existe en el repositorio y debe corresponder al contenido aprobado final.
 
 ## Resumen ejecutivo
 
@@ -81,5 +81,12 @@ actuales de `data/bronce`, pero no una API disponible.
 
 Esta versión cubre clima de tres municipios de Colima y una sola fuente
 meteorológica; no incluye capturas reales de OSM ni la capa de mercado. Los
-valores extremos se conservan marcados. El tag `e3` todavía no existe y debe
-crearse sobre el commit final aprobado; no se creó durante esta revisión.
+valores extremos se conservan marcados.
+
+El laboratorio actual incluye PCA con cinco variables, aproximación Mardia,
+distancias Mahalanobis y MANOVA por municipio. Falta una prueba formal
+Henze-Zirkler, replicación independiente y publicación final del Mapa de
+componentes si se requiere un cierre más amplio.
+
+El tag `e3` ya existe en el repositorio. No se movió ni se recreó durante
+esta revisión.

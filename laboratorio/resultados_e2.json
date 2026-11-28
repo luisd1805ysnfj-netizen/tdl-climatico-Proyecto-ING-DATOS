@@ -1,0 +1,62 @@
+{
+  "tipo": "analisis_observacional_exploratorio",
+  "advertencia": "No corresponde a un experimento aleatorizado ni a una corrida agrícola controlada. Los factores municipio y temporada de calendario provienen de datos observados de Open-Meteo.",
+  "respuesta": "precip_mm",
+  "factores": {
+    "municipio": [
+      "colima",
+      "manzanillo",
+      "tecoman"
+    ],
+    "temporada_mensual": [
+      "ene_mar",
+      "abr_jun",
+      "jul_sep",
+      "oct_dic"
+    ]
+  },
+  "matriz_completo": "3 x 4 = 12 combinaciones",
+  "matriz_fraccionada": "No se dispone de experimentos aleatorizados ni réplicas controladas",
+  "alias": "No aplicable: no existe diseño fraccionado ejecutado",
+  "ahorro_corridas_pct": null,
+  "n_observaciones": 3294,
+  "anova_tipo_2": {
+    "C(municipio)": {
+      "sum_sq": 656.844827,
+      "df": 2,
+      "F": 5.347569,
+      "p_valor": 0.004801
+    },
+    "C(temporada_mensual)": {
+      "sum_sq": 15458.846507,
+      "df": 3,
+      "F": 83.90338,
+      "p_valor": 0.0
+    },
+    "C(municipio):C(temporada_mensual)": {
+      "sum_sq": 1190.317738,
+      "df": 6,
+      "F": 3.230244,
+      "p_valor": 0.003632
+    },
+    "Residual": {
+      "sum_sq": 201564.919371,
+      "df": 3282,
+      "F": null,
+      "p_valor": null
+    }
+  },
+  "supuestos": {
+    "shapiro_residuos": {
+      "n": 500,
+      "estadistico": 0.517586,
+      "p_valor": 0.0
+    },
+    "media_residuos": -0.0,
+    "varianza_residuos": 61.210118
+  },
+  "confirmacion_tratamiento_optimo": {
+    "estado": "Pendiente",
+    "razon": "No existe experimento controlado ni corrida de confirmación."
+  }
+}

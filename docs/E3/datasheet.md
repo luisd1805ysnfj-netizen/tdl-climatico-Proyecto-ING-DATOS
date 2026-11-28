@@ -3,8 +3,7 @@
 ## Identificación
 
 - **Dataset:** Observatorio Climático y Agrícola curado (capa oro diaria).
-- **Versión:** candidata para E3; el tag Git `e3` queda pendiente de la publicación
-  final.
+- **Versión:** contenido asociado al tag Git `e3`; el tag ya existe y no fue movido.
 - **Archivos:** [`CSV`](../../data/curated/observatorio_climatico_agricola_curado.csv) ·
   [`Parquet`](../../data/curated/observatorio_climatico_agricola_curado.parquet).
 - **Licencia:** [CC BY 4.0](../../data/curated/LICENSE-DATA.md).

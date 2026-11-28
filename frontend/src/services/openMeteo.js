@@ -144,9 +144,52 @@ async function fetchHistoricalWeather(latitude, longitude, signal) {
   const currentMonth = now.toISOString().slice(0, 7)
   const monthly = aggregateDailyData(result.daily)
     .filter((month) => month.period < currentMonth)
-    .slice(-12)
+
+  const annualComparison = [...new Map(monthly.map((month) => [month.period.slice(0, 4), month])).keys()]
+  const annualRows = []
+  for (const year of annualComparison) {
+    const yearMonths = monthly.filter((month) => month.period.startsWith(`${year}-`) && month.temperature !== null)
+    if (!yearMonths.length) continue
+    const previousRows = annualRows
+    const temperatures = yearMonths.map((month) => month.temperature).filter(Number.isFinite)
+    const precipitations = yearMonths.map((month) => month.precipitation).filter(Number.isFinite)
+    const winds = yearMonths.map((month) => month.wind).filter(Number.isFinite)
+    const temperatureMean = temperatures.length ? average(temperatures) : null
+    const precipTotal = precipitations.length ? precipitations.reduce((sum, value) => sum + value, 0) : null
+    const windMean = winds.length ? average(winds) : null
+    const previousTemperature = previousRows.length
+      ? average(previousRows.map((row) => row.temperatureMean).filter(Number.isFinite))
+      : null
+    const previousPrecip = previousRows.length
+      ? average(previousRows.map((row) => row.precipitationTotal).filter(Number.isFinite))
+      : null
+    const previousWind = previousRows.length
+      ? average(previousRows.map((row) => row.windMean).filter(Number.isFinite))
+      : null
+    const dispersion = (values) => values.length > 1
+      ? Math.sqrt(values.reduce((sum, value) => sum + (value - average(values)) ** 2, 0) / (values.length - 1))
+      : 0
+    const variation = (recent, previous) => previous === null || previous === 0
+      ? null
+      : (recent - previous) / Math.abs(previous) * 100
+    annualRows.push({
+      year: Number(year),
+      monthsAvailable: yearMonths.length,
+      monthsExpected: 12,
+      dataComplete: yearMonths.length === 12,
+      temperatureMean: numberOrNull(temperatureMean),
+      precipitationTotal: numberOrNull(precipTotal),
+      windMean: numberOrNull(windMean),
+      temperatureVariationPct: temperatureMean === null ? null : numberOrNull(variation(temperatureMean, previousTemperature)),
+      precipitationVariationPct: precipTotal === null ? null : numberOrNull(variation(precipTotal, previousPrecip)),
+      windVariationPct: windMean === null ? null : numberOrNull(variation(windMean, previousWind)),
+      temperatureDispersion: dispersion(temperatures),
+      precipitationDispersion: dispersion(precipitations),
+    })
+  }
   return {
     monthly,
+    annualComparison: annualRows,
     periodStart: result.daily.time[0],
     periodEnd: result.daily.time[result.daily.time.length - 1],
   }

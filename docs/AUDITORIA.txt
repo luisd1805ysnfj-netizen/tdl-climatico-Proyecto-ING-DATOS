@@ -1,0 +1,166 @@
+Diagnóstico de auditoría integral
+
+Proyecto: Observatorio de Inteligencia Climática y Gestión de Riesgos Agrícolas
+Región: Colima, Tecomán y Manzanillo
+Fecha: 27 de noviembre de 2026
+
+Estado posterior a la correccion:
+- Se añadieron registros PSP individuales.
+- Se añadieron calculos de disponibilidad, MTBF y MTTR.
+- Se ejecutaron scripts E1, E2 exploratorio y E3.
+- Los JSON estadisticos se exportaron a React.
+- La medicion real es 74 aprobadas, 3 omitidas y 86.75% de cobertura.
+
+Resumen
+--------
+El repositorio tiene una base sólida de ingeniería de datos y linaje, pero varias
+entregas estadístico-calidad siguen incompletas.
+
+Datos reales verificables:
+- 3495 registros de bronce.
+- 3294 registros diarios en plata y oro.
+- 111 filas mensuales.
+- 201 duplicados en cuarentena.
+- 13176 valores revisados por linaje y 0 fallos.
+- Dataset curado de 3294 x 29.
+- 74 pruebas aprobadas y 3 omitidas.
+- Cobertura real de pipeline: 86.75%.
+- 42 exitos y 3 errores HTTP 429 en 45 intentos.
+- Disponibilidad observada: 93.33%.
+
+Calidad
+-------
+- bitacora_captura.csv contiene evidencia real de adquisición.
+- tiempo-luis.csv tiene solamente dos actividades E0 y 75 minutos.
+- defectos-luis.csv contiene solamente un defecto de sintaxis.
+- Faltan archivos individuales PSP de Ariadna.
+- Faltan los diez tipos de defecto PSP.
+- Faltan MTBF, MTTR, responsables, 14 días continuos y cierre de objetivos.
+
+E0
+---
+- Propuesta y estructura presentes.
+- Falta evidencia verificable de entrevista y consentimiento.
+- Falta captura real oficial adicional.
+- Falta modelo comercial basado en costos reales.
+
+E1
+---
+- Capa bronce/plata/oro implementada.
+- Falta descomposición, ADF completo por variable, ACF/PACF, correlación cruzada.
+- Faltan Simple/Naive, Holt, Holt-Winters y ARIMA/SARIMA.
+- Faltan MAE, RMSE, MAPE, residuos, Ljung-Box e intervalos de confianza.
+- Faltan pronósticos visibles en React.
+- Los resultados sintéticos no sustituyen datos reales adicionales.
+
+E2
+---
+- Linaje y fuente OSM experimental presentes.
+- Falta captura real persistida de OSM.
+- Falta diseño factorial real.
+- Faltan ANOVA de dos vías, interacción, supuestos y confirmación.
+- Faltan diseño completo/fraccionado, alias y ahorro.
+- Falta auditoría ISO/25010/25012 y auditoría cruzada.
+
+E3
+---
+- Benchmark, dataset curado y datasheet presentes.
+- Falta matriz multivariada con al menos cinco variables.
+- Faltan Mardia/Henze-Zirkler y distancias Mahalanobis.
+- Falta Q-Q multivariado.
+- Falta MANOVA Wilks/Pillai.
+- Falta comparación con ANOVAs separadas.
+- Faltan Biplot, mapa de componentes y MoProSoft/CMMI.
+- El tag e3 ya existe aunque la documentación lo declara pendiente.
+
+E4
+---
+- Existe estructura técnica y guion de demo.
+- Falta PDF final.
+- Faltan modelo de negocio real, pitch ensayado, video de dos minutos,
+  relatorías individuales y cierre de evidencia.
+
+Inconsistencias
+---------------
+- La medición real actual es 74 pruebas aprobadas, 3 omitidas y 86.75% de cobertura.
+- El datasheet y otras entregas dicen que el tag e3 está pendiente; el HEAD
+  actual está contenido en el tag e3.
+- Los defectos adicionales descritos en relatorías no están respaldados por PSP.
+- El modelo de pago, la entrevista y la disponibilidad no tienen evidencia completa.
+
+Datos
+-----
+- Bronce: 39 JSON de Open-Meteo, cuatro variables, sin humedad u otra fuente oficial.
+- Plata: sin rechazos físicos reales y con campos dif_* nulos por falta de segunda fuente.
+- Oro: diario y mensual completos, sin contexto geoespacial real persistido.
+- Cuarentena: principalmente duplicados históricos.
+- Curado: CSV y Parquet sin nulos publicados, faltan más variables y fuente geoespacial real.
+
+Laboratorio
+-----------
+Existe:
+- Caracterización mensual de precipitación.
+- ADF.
+- Shapiro-Wilk.
+- PCA básico sobre cuatro variables.
+
+Falta:
+- Descomposición.
+- ACF/PACF.
+- Correlación cruzada.
+- Diferenciación.
+- Cuatro modelos de pronóstico.
+- Métricas, residuos y intervalos.
+- Diseño factorial y ANOVA.
+- Normalidad multivariada y Mahalanobis.
+- MANOVA y biplot.
+
+Frontend React
+--------------
+Cumple:
+- Vite y React.
+- Mapa, clima, rutas y fuentes.
+- Filtros y búsqueda.
+- Datos exportados de la capa Oro.
+
+Falta:
+- Pronóstico propio con intervalos.
+- Comparación de modelos.
+- Resultados de experimento.
+- PCA/MANOVA.
+- Biplot y mapa de componentes.
+- Métricas finales SQA visibles.
+
+Plan
+----
+E0:
+- Evidencia de entrevista y consentimiento.
+- Modelo de negocio.
+- Registros PSP individuales.
+
+E1:
+- Ampliar series reales.
+- Agregar más variables autorizadas.
+- Ejecutar los cuatro modelos.
+- Guardar residuos, métricas e intervalos.
+- Mostrar pronóstico en React.
+
+E2:
+- Ejecutar el diseño factorial.
+- Capturar OSM real autorizado.
+- Ejecutar ANOVA e interacción.
+- Completar auditorías ISO.
+
+E3:
+- Matriz multivariada de al menos cinco variables.
+- Normalidad multivariada y Mahalanobis.
+- PCA completo y MANOVA.
+- Publicar resultados React.
+- Completar sellos y cierres.
+
+E4:
+- Reporte final PDF.
+- Modelo de negocio.
+- Demo y video.
+- Relatorías individuales.
+- Evidencias finales y enlaces Git.

@@ -9,6 +9,10 @@
 * **Región:** Estado de Colima (Municipios de Tecomán, Colima y Manzanillo).
 * **Pregunta detonadora:** ¿Cómo han variado los patrones de precipitación acumulada y temperatura en los municipios agrícolas clave de Colima durante los últimos 36 meses, y qué anomalías térmicas e hídricas se pronostican para el próximo semestre?
 * **Cliente potencial:** Productores agrícolas locales (ej. zarzamora, limón, maíz), módulos de riego, asociaciones de agricultores y direcciones municipales de desarrollo rural.
+* **Modelo de pago de referencia:** suscripción mensual accesible por productor
+  o asociación; precio de defensa pendiente de validación comercial. El valor
+  debe cubrir cómputo, almacenamiento, soporte y revisión de licencias. No se
+  afirma una disposición efectiva de pago por los testimonios declarados.
 
 ---
 

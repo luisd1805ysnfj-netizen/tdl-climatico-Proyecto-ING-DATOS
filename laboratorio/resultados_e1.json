@@ -1,0 +1,509 @@
+{
+  "tipo": "caracterizacion_series_mensuales",
+  "variable": "precip_mm",
+  "unidad": "mm",
+  "municipios": {
+    "colima": {
+      "n_meses": 37,
+      "media": 98.432,
+      "mediana": 22.3,
+      "desviacion": 120.535,
+      "descomposicion": {
+        "model": "additive",
+        "seasonal_mean": -2.124093,
+        "residual_std": 44.077131,
+        "trend_last": 72.830944
+      },
+      "adf": {
+        "estadistico": -5.429706,
+        "p_valor": 3e-06,
+        "rezagos": 7
+      },
+      "diferenciacion": {
+        "adf_estadistico": -5.383216,
+        "adf_p_valor": 4e-06,
+        "n_observaciones": 36
+      },
+      "acf": [
+        1.0,
+        0.606351,
+        0.269118,
+        -0.021804,
+        -0.318261,
+        -0.52036,
+        -0.517713,
+        -0.503502,
+        -0.373793,
+        -0.020498,
+        0.175146,
+        0.418075,
+        0.581975
+      ],
+      "pacf": [
+        1.0,
+        0.606351,
+        -0.155838,
+        -0.187885,
+        -0.307781,
+        -0.267547,
+        -0.097072,
+        -0.293635,
+        -0.198928,
+        0.138229,
+        -0.160214,
+        0.194756,
+        0.147503
+      ],
+      "correlacion_cruzada": {
+        "tmax_c": {
+          "-3": -0.291889,
+          "-2": -0.326402,
+          "-1": -0.45665,
+          "0": -0.492537,
+          "1": -0.003135,
+          "2": 0.306833,
+          "3": 0.49895
+        },
+        "tmin_c": {
+          "-3": -0.092363,
+          "-2": 0.232902,
+          "-1": 0.414322,
+          "0": 0.545105,
+          "1": 0.647649,
+          "2": 0.513216,
+          "3": 0.322026
+        },
+        "viento_max_kmh": {
+          "-3": -0.255044,
+          "-2": -0.45848,
+          "-1": -0.666478,
+          "0": -0.654882,
+          "1": -0.339883,
+          "2": 0.037125,
+          "3": 0.438817
+        }
+      },
+      "modelos_prueba": {
+        "simple": {
+          "MAE": 116.4125,
+          "RMSE": 146.019241,
+          "MAPE_pct": 88.442672
+        },
+        "holt": {
+          "MAE": 118.605082,
+          "RMSE": 148.092717,
+          "MAPE_pct": 93.460275
+        },
+        "holt_winters": {
+          "MAE": 62.978862,
+          "RMSE": 84.421381,
+          "MAPE_pct": 88.291901
+        },
+        "arima": {
+          "MAE": 92.13387,
+          "RMSE": 103.073514,
+          "MAPE_pct": 260.557547
+        }
+      },
+      "residuos": {
+        "simple": {
+          "ljung_box_p_valor": 0.171723,
+          "media_residual": 115.1875,
+          "varianza_residual": 9203.952679
+        },
+        "holt": {
+          "ljung_box_p_valor": 0.174226,
+          "media_residual": 117.514163,
+          "varianza_residual": 9282.141833
+        },
+        "holt_winters": {
+          "ljung_box_p_valor": 0.754246,
+          "media_residual": -43.43961,
+          "varianza_residual": 5988.536952
+        },
+        "arima": {
+          "ljung_box_p_valor": 0.170741,
+          "media_residual": 61.656306,
+          "varianza_residual": 7797.313468
+        }
+      },
+      "pronostico_6_meses": [
+        {
+          "fecha": "2026-12",
+          "pronostico": -1.087868,
+          "limite_inferior_95": -89.959067,
+          "limite_superior_95": 87.783331
+        },
+        {
+          "fecha": "2027-01",
+          "pronostico": -5.832632,
+          "limite_inferior_95": -94.703831,
+          "limite_superior_95": 83.038567
+        },
+        {
+          "fecha": "2027-02",
+          "pronostico": -3.61733,
+          "limite_inferior_95": -92.488529,
+          "limite_superior_95": 85.253868
+        },
+        {
+          "fecha": "2027-03",
+          "pronostico": -12.520423,
+          "limite_inferior_95": -101.391622,
+          "limite_superior_95": 76.350775
+        },
+        {
+          "fecha": "2027-04",
+          "pronostico": -14.163994,
+          "limite_inferior_95": -103.035193,
+          "limite_superior_95": 74.707205
+        },
+        {
+          "fecha": "2027-05",
+          "pronostico": 2.289297,
+          "limite_inferior_95": -86.581902,
+          "limite_superior_95": 91.160496
+        }
+      ],
+      "shapiro": {
+        "estadistico": 0.779541,
+        "p_valor": 5e-06
+      }
+    },
+    "manzanillo": {
+      "n_meses": 37,
+      "media": 67.268,
+      "mediana": 11.6,
+      "desviacion": 101.08,
+      "descomposicion": {
+        "model": "additive",
+        "seasonal_mean": -1.74312,
+        "residual_std": 63.128755,
+        "trend_last": 53.463326
+      },
+      "adf": {
+        "estadistico": -4.078789,
+        "p_valor": 0.00105,
+        "rezagos": 0
+      },
+      "diferenciacion": {
+        "adf_estadistico": -5.489169,
+        "adf_p_valor": 2e-06,
+        "n_observaciones": 36
+      },
+      "acf": [
+        1.0,
+        0.339246,
+        0.123036,
+        0.023357,
+        -0.134868,
+        -0.291234,
+        -0.29357,
+        -0.290324,
+        -0.239543,
+        0.047141,
+        0.006422,
+        0.12508,
+        0.241182
+      ],
+      "pacf": [
+        1.0,
+        0.339246,
+        0.008981,
+        -0.023795,
+        -0.154627,
+        -0.229187,
+        -0.142864,
+        -0.162391,
+        -0.133593,
+        0.141321,
+        -0.141516,
+        0.04052,
+        0.070426
+      ],
+      "correlacion_cruzada": {
+        "tmax_c": {
+          "-3": -0.04822,
+          "-2": 0.270494,
+          "-1": 0.361029,
+          "0": 0.344673,
+          "1": 0.622228,
+          "2": 0.462288,
+          "3": 0.124922
+        },
+        "tmin_c": {
+          "-3": 0.113246,
+          "-2": 0.394428,
+          "-1": 0.507207,
+          "0": 0.552607,
+          "1": 0.568239,
+          "2": 0.28759,
+          "3": 0.032358
+        },
+        "viento_max_kmh": {
+          "-3": -0.404175,
+          "-2": -0.433765,
+          "-1": -0.413799,
+          "0": 0.179458,
+          "1": 0.210808,
+          "2": 0.237808,
+          "3": 0.453649
+        }
+      },
+      "modelos_prueba": {
+        "simple": {
+          "MAE": 118.025,
+          "RMSE": 172.909738,
+          "MAPE_pct": 83.293844
+        },
+        "holt": {
+          "MAE": 114.914503,
+          "RMSE": 169.118336,
+          "MAPE_pct": 159.281543
+        },
+        "holt_winters": {
+          "MAE": 57.575475,
+          "RMSE": 116.47523,
+          "MAPE_pct": 162.668785
+        },
+        "arima": {
+          "MAE": 100.230412,
+          "RMSE": 142.973068,
+          "MAPE_pct": 764.087634
+        }
+      },
+      "residuos": {
+        "simple": {
+          "ljung_box_p_valor": 0.676045,
+          "media_residual": 118.025,
+          "varianza_residual": 18249.002143
+        },
+        "holt": {
+          "ljung_box_p_valor": 0.676987,
+          "media_residual": 112.454006,
+          "varianza_residual": 18234.409157
+        },
+        "holt_winters": {
+          "ljung_box_p_valor": 0.959187,
+          "media_residual": 34.862591,
+          "varianza_residual": 14115.518862
+        },
+        "arima": {
+          "ljung_box_p_valor": 0.758819,
+          "media_residual": 72.731696,
+          "varianza_residual": 17315.88405
+        }
+      },
+      "pronostico_6_meses": [
+        {
+          "fecha": "2026-12",
+          "pronostico": 20.471863,
+          "limite_inferior_95": -100.629018,
+          "limite_superior_95": 141.572743
+        },
+        {
+          "fecha": "2027-01",
+          "pronostico": 27.771893,
+          "limite_inferior_95": -93.328987,
+          "limite_superior_95": 148.872774
+        },
+        {
+          "fecha": "2027-02",
+          "pronostico": 20.237219,
+          "limite_inferior_95": -100.863662,
+          "limite_superior_95": 141.338099
+        },
+        {
+          "fecha": "2027-03",
+          "pronostico": 13.205518,
+          "limite_inferior_95": -107.895362,
+          "limite_superior_95": 134.306399
+        },
+        {
+          "fecha": "2027-04",
+          "pronostico": 13.204695,
+          "limite_inferior_95": -107.896186,
+          "limite_superior_95": 134.305575
+        },
+        {
+          "fecha": "2027-05",
+          "pronostico": 19.237558,
+          "limite_inferior_95": -101.863322,
+          "limite_superior_95": 140.338439
+        }
+      ],
+      "shapiro": {
+        "estadistico": 0.710886,
+        "p_valor": 0.0
+      }
+    },
+    "tecoman": {
+      "n_meses": 37,
+      "media": 74.989,
+      "mediana": 24.0,
+      "desviacion": 100.685,
+      "descomposicion": {
+        "model": "additive",
+        "seasonal_mean": -1.430776,
+        "residual_std": 60.481194,
+        "trend_last": 48.49644
+      },
+      "adf": {
+        "estadistico": -5.070314,
+        "p_valor": 1.6e-05,
+        "rezagos": 7
+      },
+      "diferenciacion": {
+        "adf_estadistico": -3.443297,
+        "adf_p_valor": 0.009569,
+        "n_observaciones": 36
+      },
+      "acf": [
+        1.0,
+        0.340899,
+        0.10734,
+        0.056772,
+        -0.169475,
+        -0.378105,
+        -0.383258,
+        -0.353865,
+        -0.285574,
+        0.072015,
+        0.102795,
+        0.202406,
+        0.347859
+      ],
+      "pacf": [
+        1.0,
+        0.340899,
+        -0.010039,
+        0.026293,
+        -0.221894,
+        -0.301069,
+        -0.216162,
+        -0.207571,
+        -0.182843,
+        0.159002,
+        -0.097321,
+        0.021451,
+        0.058462
+      ],
+      "correlacion_cruzada": {
+        "tmax_c": {
+          "-3": 0.023114,
+          "-2": 0.300283,
+          "-1": 0.355216,
+          "0": 0.348273,
+          "1": 0.642661,
+          "2": 0.345729,
+          "3": 0.070432
+        },
+        "tmin_c": {
+          "-3": 0.105247,
+          "-2": 0.374552,
+          "-1": 0.535376,
+          "0": 0.614829,
+          "1": 0.605103,
+          "2": 0.261748,
+          "3": -0.030423
+        },
+        "viento_max_kmh": {
+          "-3": -0.203101,
+          "-2": -0.3619,
+          "-1": -0.470355,
+          "0": -0.075401,
+          "1": 0.270407,
+          "2": 0.28072,
+          "3": 0.411059
+        }
+      },
+      "modelos_prueba": {
+        "simple": {
+          "MAE": 105.825,
+          "RMSE": 151.887203,
+          "MAPE_pct": 116.900867
+        },
+        "holt": {
+          "MAE": 106.387856,
+          "RMSE": 152.340626,
+          "MAPE_pct": 179.474112
+        },
+        "holt_winters": {
+          "MAE": 71.927394,
+          "RMSE": 104.312206,
+          "MAPE_pct": 221.725897
+        },
+        "arima": {
+          "MAE": 82.840354,
+          "RMSE": 116.907436,
+          "MAPE_pct": 871.839021
+        }
+      },
+      "residuos": {
+        "simple": {
+          "ljung_box_p_valor": 0.64256,
+          "media_residual": 105.375,
+          "varianza_residual": 13675.236429
+        },
+        "holt": {
+          "ljung_box_p_valor": 0.635928,
+          "media_residual": 105.22698,
+          "varianza_residual": 13868.513181
+        },
+        "holt_winters": {
+          "ljung_box_p_valor": 0.856974,
+          "media_residual": -10.10749,
+          "varianza_residual": 12318.714167
+        },
+        "arima": {
+          "ljung_box_p_valor": 0.702076,
+          "media_residual": 51.639519,
+          "varianza_residual": 12572.238476
+        }
+      },
+      "pronostico_6_meses": [
+        {
+          "fecha": "2026-12",
+          "pronostico": 10.377555,
+          "limite_inferior_95": -105.485106,
+          "limite_superior_95": 126.240216
+        },
+        {
+          "fecha": "2027-01",
+          "pronostico": 20.477531,
+          "limite_inferior_95": -95.38513,
+          "limite_superior_95": 136.340192
+        },
+        {
+          "fecha": "2027-02",
+          "pronostico": 10.84427,
+          "limite_inferior_95": -105.018391,
+          "limite_superior_95": 126.706932
+        },
+        {
+          "fecha": "2027-03",
+          "pronostico": 2.677691,
+          "limite_inferior_95": -113.18497,
+          "limite_superior_95": 118.540353
+        },
+        {
+          "fecha": "2027-04",
+          "pronostico": 1.94428,
+          "limite_inferior_95": -113.918381,
+          "limite_superior_95": 117.806941
+        },
+        {
+          "fecha": "2027-05",
+          "pronostico": 14.544317,
+          "limite_inferior_95": -101.318344,
+          "limite_superior_95": 130.406978
+        }
+      ],
+      "shapiro": {
+        "estadistico": 0.75654,
+        "p_valor": 2e-06
+      }
+    }
+  },
+  "nota": "ADF evalua estacionariedad; Shapiro complementa caracterizacion univariada."
+}

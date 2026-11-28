@@ -1,0 +1,5 @@
+Fecha,Responsable,Fase,Actividad,TiempoMinutos,Estado,Evidencia
+2026-11-09,Luis Alfredo Ruiz Fuentes,E0,Configuracion de repositorio y estructura,45,Completado,Commit y estructura inicial
+2026-11-09,Luis Alfredo Ruiz Fuentes,E0,Redaccion de propuesta y entrevista declarada,30,Completado,docs/E0/propuesta.md
+2026-11-26,Luis Alfredo Ruiz Fuentes,E3,Ejecutar benchmark y validar datos curados,30,Completado,docs/E3/benchmark.json
+2026-11-27,Luis Alfredo Ruiz Fuentes,E1-E4,Actualizar trazabilidad y registros PSP,0,Pendiente de medicion,Se ejecuta fuera de una bitacora individual previa

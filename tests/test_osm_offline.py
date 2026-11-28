@@ -224,28 +224,15 @@ def test_parcelas_lejanas_no_entran_al_circulo(bronce_osm):
     assert r["n_parcelas"].iloc[0] == 0 and r["area_agricola_ha"].iloc[0] == 0
 
 
-def test_el_mapa_lleva_la_atribucion_de_osm(bronce_osm, tmp_path):
-    pytest.importorskip("geopandas")
-    pytest.importorskip("folium")
-    from pipeline import mapa
-    parcelas, centros = geo.cargar_osm_bronce(bronce_osm)
-    gdf = geo.a_geodataframe(parcelas)
-    contexto = geo.resumen_agricola(gdf, centros)
-    ruta = mapa.construir_mapa(gdf, contexto, centros, tmp_path / "m.html")
-    html = ruta.read_text(encoding="utf-8")
-    assert "OpenStreetMap" in html and "ODbL" in html and "tecoman" in html.lower()
-
-
 def test_pipeline_integra_la_capa_agricola_al_oro(bronce_linaje_osm, tmp_path):
     pytest.importorskip("geopandas")
     pytest.importorskip("folium")
     from pipeline.run_pipeline import ejecutar
     r = ejecutar(bronce_linaje_osm, tmp_path / "plata", tmp_path / "oro", tmp_path / "cuarentena",
-                 verbose=False, dir_tablero=tmp_path / "tablero")
+                 verbose=False)
     assert {"area_agricola_ha", "pct_area_agricola", "radio_agricola_km"} <= set(r["oro_diario"].columns)
     assert (tmp_path / "oro" / "oro_contexto_agricola.csv").exists()
     assert (tmp_path / "plata" / "osm_parcelas.geojson").exists()
-    assert (tmp_path / "tablero" / "mapa_agricola.html").exists()
     assert r["reporte"]["osm"]["cuarentena"] == 0
 
 

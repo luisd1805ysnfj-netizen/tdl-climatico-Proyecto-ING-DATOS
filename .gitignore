@@ -4,3 +4,13 @@ dist/
 frontend/dist/
 .env
 .env.local
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.tmp
+coverage/
+.coverage

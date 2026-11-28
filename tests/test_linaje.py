@@ -11,7 +11,7 @@ from pipeline.run_pipeline import ejecutar
 
 def correr(bronce, tmp_path):
     return ejecutar(bronce, tmp_path / "plata", tmp_path / "oro", tmp_path / "cuarentena",
-                    verbose=False, dir_tablero=tmp_path / "tablero")
+                    verbose=False)
 
 
 def test_la_huella_no_depende_del_sistema_operativo():

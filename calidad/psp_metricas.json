@@ -1,0 +1,15 @@
+{
+  "periodo_inicio": "2026-11-13T01:02:09+00:00",
+  "periodo_fin": "2026-11-26T22:47:07+00:00",
+  "registros_de_intentos": 45,
+  "corridas_por_timestamp": 15,
+  "exitos": 42,
+  "fallos": 3,
+  "disponibilidad_pct": 93.33,
+  "objetivo_disponibilidad_pct": 95.0,
+  "objetivo_alcanzado": false,
+  "mttr_segundos": 6.4,
+  "mtbf_horas": 22.7,
+  "metodologia": "Disponibilidad = éxitos / registros de intento. MTTR = duración media registrada en fallos. MTBF = intervalo medio aproximado entre timestamps distintos con fallos y el último intento registrado antes de cada fallo.",
+  "limitacion": "No equivale a SLA de 14 días ni mide Uptime por servicios observados cada minuto; la bitácora contiene intentos por municipio y no estado continuo de todos los componentes."
+}

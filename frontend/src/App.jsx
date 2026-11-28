@@ -311,6 +311,9 @@ export default function App() {
   const [mobileSection, setMobileSection] = useState('clima')
   const [showAllCrops, setShowAllCrops] = useState(false)
   const [cropsCollapsed, setCropsCollapsed] = useState(false)
+  const [comparisonMunicipality, setComparisonMunicipality] = useState('colima')
+  const [comparisonYear, setComparisonYear] = useState(null)
+  const [observatorioData, setObservatorioData] = useState(null)
   const [routeResult, setRouteResult] = useState(null)
   const [selectedRouteId, setSelectedRouteId] = useState('')
   const [routeLoading, setRouteLoading] = useState(false)
@@ -355,7 +358,31 @@ export default function App() {
 
   useEffect(() => () => routeAbortController.current?.abort(), [])
 
+  useEffect(() => {
+    let active = true
+    fetch('/data/observatorio.json')
+      .then((response) => response.ok ? response.json() : null)
+      .then((payload) => { if (active) setObservatorioData(payload) })
+      .catch(() => { if (active) setObservatorioData(null) })
+    return () => { active = false }
+  }, [])
+
   const regionData = locationOverride ?? regions[region]
+  const municipalityLocations = {
+    colima: { name: 'Colima', latitude: 19.2433, longitude: -103.7250, mapCenter: [19.2433, -103.7250], zoom: 9 },
+    tecoman: { name: 'Tecomán', latitude: 18.9125, longitude: -103.8753, mapCenter: [18.9125, -103.8753], zoom: 9 },
+    manzanillo: { name: 'Manzanillo', latitude: 19.0522, longitude: -104.3158, mapCenter: [19.0522, -104.3158], zoom: 9 },
+  }
+  const comparisonRecords = observatorioData?.comparativa_interanual
+    ?.filter((record) => record.municipio === comparisonMunicipality) ?? []
+  const comparisonYears = [...new Set(comparisonRecords.map((record) => record.anio))]
+    .sort((a, b) => b - a)
+  useEffect(() => {
+    if (comparisonYears.length && (comparisonYear === null || !comparisonYears.includes(comparisonYear))) {
+      setComparisonYear(comparisonYears[0])
+    }
+  }, [comparisonYear, observatorioData, comparisonMunicipality])
+  const comparisonRecord = comparisonRecords.find((record) => record.anio === comparisonYear) ?? null
   const selectedLocation = {
     latitude: locationOverride?.latitude ?? regionData.latitude,
     longitude: locationOverride?.longitude ?? regionData.longitude,
@@ -364,6 +391,7 @@ export default function App() {
   const mappedMarketsRequest = useMappedMarkets(selectedLocation)
   const forecast = climateRequest.outlook
   const currentWeather = forecast?.current ?? null
+  const liveAnnualComparison = forecast?.historical?.annualComparison ?? []
   const cropSuitability = (name) => {
     const apiRequirements = cropRequirements.data?.crops[name]
     const result = calculateClimateSuitability(
@@ -581,6 +609,29 @@ export default function App() {
             <Database size={18} /> Fuentes y API
           </button>
         </nav>
+          <section className="sidebar-live-panel" aria-label="Estado rápido y navegación">
+            <div className="sidebar-location">
+              <span>UBICACIÓN ACTUAL</span>
+              <strong>{locationOverride?.name ?? regionData.city}</strong>
+              <small>{selectedLocation.latitude.toFixed(4)}, {selectedLocation.longitude.toFixed(4)}</small>
+            </div>
+            <div className="sidebar-system-status">
+              <span><i /> Capa Oro: 3,294 registros</span>
+              <span><i /> Linaje: 0 fallos</span>
+              <span><i /> Disponibilidad: 93.33%</span>
+            </div>
+            <div className="sidebar-shortcuts" aria-label="Atajos rápidos">
+              <button type="button" onClick={() => setMobileSection('clima')}>
+                <Activity size={14} /> Pronóstico / Histórico
+              </button>
+              <button type="button" onClick={() => setMobileSection('crops')}>
+                <Leaf size={14} /> Comparativa cultivos
+              </button>
+              <button type="button" onClick={() => selectTab('fuentes')}>
+                <Database size={14} /> Fuentes / Calidad
+              </button>
+            </div>
+          </section>
 
         {activeTab === 'observatorio' && (
           <div className="sidebar-content">
@@ -655,6 +706,30 @@ export default function App() {
               </select>
             </div>
 
+            <div className="municipality-switcher" aria-label="Selector rápido de municipio">
+              <span>Comparativa rápida</span>
+              <div>
+                {Object.entries(municipalityLocations).map(([key, item]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    className={comparisonMunicipality === key ? 'active' : ''}
+                    aria-pressed={comparisonMunicipality === key}
+                    onClick={() => {
+                      invalidateRoute()
+                      setComparisonMunicipality(key)
+                      setLocationOverride(item)
+                      setParcelPoint(null)
+                      setSelectedBuyer(null)
+                      setLocationStatus(`${item.name}: ubicación seleccionada`)
+                    }}
+                  >
+                    {item.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="weather-heading">
               <div>
                 <span>Clima ahora</span>
@@ -724,8 +799,8 @@ export default function App() {
                         <stop offset="95%" stopColor="#87a887" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="prediction" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#df9a32" stopOpacity={0.32} />
-                        <stop offset="95%" stopColor="#df9a32" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#173528" stopOpacity={0.18} />
+                        <stop offset="95%" stopColor="#173528" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e7ede7" />
@@ -734,7 +809,7 @@ export default function App() {
                     <YAxis yAxisId="humidity" hide orientation="right" domain={[30, 100]} />
                     <ChartTooltip />
                     <Area type="monotone" dataKey="historico" stroke="#728b74" fill="url(#history)" strokeWidth={2} />
-                    <Area type="monotone" dataKey="predicción" stroke="#d89332" fill="url(#prediction)" strokeWidth={2} />
+                    <Area type="monotone" dataKey="predicción" stroke="#173528" fill="url(#prediction)" strokeWidth={2} />
                     <Line yAxisId="humidity" type="monotone" dataKey="humedadHistorica" stroke="#347b83" strokeWidth={1.5} dot={false} />
                     <Line yAxisId="humidity" type="monotone" dataKey="humedadPronostico" stroke="#639ba1" strokeWidth={1.5} strokeDasharray="4 3" dot={false} />
                   </AreaChart>
@@ -817,6 +892,97 @@ export default function App() {
                   </button>
                 )}
               </div>
+              <section className="interannual-card" aria-label="Comparativa climática interanual">
+                <div className="interannual-heading">
+                  <div>
+                    <span>COMPARATIVA INTERANUAL REAL</span>
+                    <h2>{municipalityLocations[comparisonMunicipality]?.name ?? 'Municipio'}</h2>
+                  </div>
+                  <button type="button" onClick={() => selectTab('fuentes')}>
+                    <Database size={14} /> Calidad y fuentes
+                  </button>
+                </div>
+                {liveAnnualComparison.length > 0 ? (
+                  <div className="live-five-year">
+                    <span>ÚLTIMOS 5 AÑOS · ARCHIVE API</span>
+                    <div className="live-five-year-grid">
+                      {liveAnnualComparison.slice(-5).map((row) => (
+                        <div key={row.year}>
+                          <strong>{row.year}</strong>
+                          <small>{row.monthsAvailable}/12 meses</small>
+                          <span>Tmax {row.temperatureMean === null ? '—' : `${row.temperatureMean.toFixed(1)} °C`}</span>
+                          <span>Lluvia {row.precipitationTotal === null ? '—' : `${row.precipitationTotal.toFixed(1)} mm`}</span>
+                          <span>{row.precipitationVariationPct === null
+                            ? 'Sin variación previa'
+                            : `${row.precipitationVariationPct >= 0 ? '+' : ''}${row.precipitationVariationPct.toFixed(1)}% precipitación`}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="interannual-warning">
+                    Histórico de 5 años no disponible para estas coordenadas. Seleccione otra ubicación o consulte cuando Archive API tenga cobertura.
+                  </p>
+                )}
+                <div className="year-switcher" aria-label="Seleccionar año de comparación">
+                  {comparisonYears.map((year) => (
+                    <button
+                      key={year}
+                      type="button"
+                      className={comparisonYear === year ? 'active' : ''}
+                      aria-pressed={comparisonYear === year}
+                      onClick={() => setComparisonYear(year)}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                  {comparisonYears.length === 0 && <span className="interannual-unavailable">Año no disponible</span>}
+                </div>
+                {comparisonRecord ? (
+                  <>
+                    <div className="interannual-metrics">
+                      <div>
+                        <span>Tmax media</span>
+                        <strong>{comparisonRecord.tmax_media_c.toFixed(1)} °C</strong>
+                        <small>{comparisonRecord.variacion_tmax_pct === null
+                          ? 'Sin promedio previo'
+                          : `${comparisonRecord.variacion_tmax_pct >= 0 ? '+' : ''}${comparisonRecord.variacion_tmax_pct.toFixed(1)}% vs. histórico previo`}</small>
+                      </div>
+                      <div>
+                        <span>Tmin media</span>
+                        <strong>{comparisonRecord.tmin_media_c.toFixed(1)} °C</strong>
+                        <small>{comparisonRecord.variacion_tmin_pct === null
+                          ? 'Sin promedio previo'
+                          : `${comparisonRecord.variacion_tmin_pct >= 0 ? '+' : ''}${comparisonRecord.variacion_tmin_pct.toFixed(1)}% vs. histórico previo`}</small>
+                      </div>
+                      <div>
+                        <span>Precipitación</span>
+                        <strong>{comparisonRecord.precip_anual_mm.toFixed(1)} mm</strong>
+                        <small>{comparisonRecord.variacion_precip_pct === null
+                          ? 'Sin promedio previo'
+                          : `${comparisonRecord.variacion_precip_pct >= 0 ? '+' : ''}${comparisonRecord.variacion_precip_pct.toFixed(1)}% vs. histórico previo`}</small>
+                      </div>
+                      <div>
+                        <span>Viento medio</span>
+                        <strong>{comparisonRecord.viento_medio_kmh.toFixed(1)} km/h</strong>
+                        <small>{comparisonRecord.variacion_viento_pct === null
+                          ? 'Sin promedio previo'
+                          : `${comparisonRecord.variacion_viento_pct >= 0 ? '+' : ''}${comparisonRecord.variacion_viento_pct.toFixed(1)}% vs. histórico previo`}</small>
+                      </div>
+                    </div>
+                    <div className="interannual-foot">
+                      <span>{comparisonRecord.meses_disponibles}/12 meses disponibles</span>
+                      <span>Disp. Tmax ±{comparisonRecord.dispersion_tmax_c.toFixed(1)} °C</span>
+                      <span>Disp. lluvia ±{comparisonRecord.dispersion_precip_mm.toFixed(1)} mm</span>
+                    </div>
+                    {!comparisonRecord.datos_completos && (
+                      <p className="interannual-warning">El año seleccionado no tiene los 12 meses completos; compara únicamente con los meses disponibles.</p>
+                    )}
+                  </>
+                ) : (
+                  <p className="interannual-warning">No hay datos reales para esta ubicación y año. Seleccione otro municipio o año disponible.</p>
+                )}
+              </section>
               <div className="recommendation-count" aria-live="polite">
                 {matchingCrops.length} {matchingCrops.length === 1 ? 'cultivo' : 'cultivos'} en catálogo · precios orientativos locales; API opcional
               </div>
@@ -1213,6 +1379,29 @@ export default function App() {
 }
 
 function SourcesView({ market, climate, requirements, mappedMarkets, exchange, crop, routeResult, onRefresh, onBack }) {
+  const [sourceSearch, setSourceSearch] = useState('')
+  const [sourceStatus, setSourceStatus] = useState('all')
+  const [pipelineData, setPipelineData] = useState(null)
+  const [analyticalData, setAnalyticalData] = useState({
+    e1: null,
+    e2: null,
+    e3: null,
+  })
+  useEffect(() => {
+    let active = true
+    fetch('/data/observatorio.json')
+      .then((response) => response.ok ? response.json() : null)
+      .then((payload) => { if (active) setPipelineData(payload) })
+      .catch(() => { if (active) setPipelineData(null) })
+    Promise.all([
+      fetch('/data/resultados_e1.json').then((response) => response.ok ? response.json() : null).catch(() => null),
+      fetch('/data/resultados_e2.json').then((response) => response.ok ? response.json() : null).catch(() => null),
+      fetch('/data/resultados_e3.json').then((response) => response.ok ? response.json() : null).catch(() => null),
+    ]).then(([e1, e2, e3]) => {
+      if (active) setAnalyticalData({ e1, e2, e3 })
+    })
+    return () => { active = false }
+  }, [])
   const climateSources = climate.outlook?.sources ?? {}
   const apiCrops = new Set(market.priceRecords.map((record) => record.crop))
   const displayPriceRecords = [
@@ -1235,6 +1424,16 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
     : routeResult?.mode === 'simulation'
       ? 'OSRM · ruta de referencia, sin tráfico ni tarifas'
       : 'Pendiente de consulta'
+  const matchesSource = (text, status = 'all') => {
+    const query = sourceSearch.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es')
+    const searchable = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es')
+    return (!query || searchable.includes(query)) && (sourceStatus === 'all' || sourceStatus === status)
+  }
+  const filteredPriceRecords = displayPriceRecords.filter((record) => {
+    const status = record.isReferenceOnly ? 'pending' : 'available'
+    const text = `${record.crop} ${record.region ?? ''} ${record.isReferenceOnly ? 'orientativo referencia local no oficial' : 'API conectada fuente'}`
+    return matchesSource(text, status)
+  })
 
   return (
     <div className="sources-page">
@@ -1253,8 +1452,124 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
         </div>
       </div>
 
+      <div className="sources-toolbar" role="search" aria-label="Filtrar fuentes y datos">
+        <label>
+          <Search size={15} />
+          <span className="sr-only">Buscar fuente o API</span>
+          <input
+            type="search"
+            value={sourceSearch}
+            onChange={(event) => setSourceSearch(event.target.value)}
+            placeholder="Buscar fuente, API o cultivo"
+          />
+        </label>
+        <label>
+          <span>Estado</span>
+          <select value={sourceStatus} onChange={(event) => setSourceStatus(event.target.value)}>
+            <option value="all">Todas</option>
+            <option value="available">Disponibles</option>
+            <option value="pending">Orientativas o pendientes</option>
+          </select>
+        </label>
+        {(sourceSearch || sourceStatus !== 'all') && (
+          <button type="button" className="sources-clear" onClick={() => { setSourceSearch(''); setSourceStatus('all') }}>
+            <X size={14} /> Limpiar filtros
+          </button>
+        )}
+      </div>
+
       <div className="source-cards">
-        <article>
+        <article hidden={!matchesSource('capa oro pipeline datos procesados calidad linaje', pipelineData ? 'available' : 'pending')}>
+          <div className="source-icon weather"><Database size={22} /></div>
+          <div>
+            <span>DATOS PROCESADOS DEL PIPELINE</span>
+            <h3>Capa Oro · React JSON</h3>
+            <a href="/data/observatorio.json" target="_blank" rel="noreferrer">Abrir JSON exportado</a>
+          </div>
+          <div className={`source-state ${pipelineData ? '' : 'demo'}`}>
+            <i /> {pipelineData
+              ? `${pipelineData.municipios?.length ?? 0} municipios · ${pipelineData.periodo?.inicio ?? 'inicio'} a ${pipelineData.periodo?.fin ?? 'fin'}`
+              : 'Dato no disponible · ejecución pendiente'}
+          </div>
+          {pipelineData?.linaje?.fallos !== undefined && (
+            <small className="source-card-note">Linaje: {pipelineData.linaje.fallos} fallos · {pipelineData.linaje.valores_revisados ?? 0} valores revisados.</small>
+          )}
+        </article>
+        <article hidden={!matchesSource('E1 pronostico serie tiempo ADF descomposicion modelos intervalos', analyticalData.e1 ? 'available' : 'pending')}>
+          <div className="source-icon weather"><Activity size={22} /></div>
+          <div>
+            <span>ANÁLISIS E1</span>
+            <h3>Series, pronóstico e incertidumbre</h3>
+            <a href="/data/resultados_e1.json" target="_blank" rel="noreferrer">Abrir resultados JSON</a>
+          </div>
+          <div className={`source-state ${analyticalData.e1 ? '' : 'demo'}`}>
+            <i /> {analyticalData.e1
+              ? `${Object.keys(analyticalData.e1.municipios ?? {}).length} municipios analizados`
+              : 'Dato no disponible · modelo pendiente'}
+          </div>
+          {analyticalData.e1 && (
+            <small className="source-card-note">
+              ADF, ACF/PACF, descomposición y 4 modelos registrados por municipio. Los intervalos son aproximados y no sustituyen validación local.
+            </small>
+          )}
+        </article>
+        <article hidden={!matchesSource('E2 factorial ANOVA interaccion diseno completo fraccionado', analyticalData.e2 ? 'available' : 'pending')}>
+          <div className="source-icon market"><Database size={22} /></div>
+          <div>
+            <span>ANÁLISIS E2</span>
+            <h3>Factorial y ANOVA de dos vías</h3>
+            <a href="/data/resultados_e2.json" target="_blank" rel="noreferrer">Abrir resultados JSON</a>
+          </div>
+          <div className={`source-state ${analyticalData.e2 ? '' : 'demo'}`}>
+            <i /> {analyticalData.e2
+              ? analyticalData.e2.tipo === 'analisis_observacional_exploratorio'
+                ? 'Análisis observacional · no experimento'
+                : 'Resultados disponibles'
+              : 'Dato no disponible · experimento pendiente'}
+          </div>
+          {analyticalData.e2?.advertencia && (
+            <small className="source-card-note">{analyticalData.e2.advertencia}</small>
+          )}
+        </article>
+        <article hidden={!matchesSource('E3 PCA MANOVA Mahalanobis Mardia componente multivariado', analyticalData.e3 ? 'available' : 'pending')}>
+          <div className="source-icon weather"><Activity size={22} /></div>
+          <div>
+            <span>ANÁLISIS E3</span>
+            <h3>PCA, Mahalanobis y MANOVA</h3>
+            <a href="/data/resultados_e3.json" target="_blank" rel="noreferrer">Abrir resultados JSON</a>
+            {' '}
+            {analyticalData.e3?.biplot && <a href="/data/pca_biplot.png" target="_blank" rel="noreferrer">Biplot PNG</a>}
+          </div>
+          <div className={`source-state ${analyticalData.e3 ? '' : 'demo'}`}>
+            <i /> {analyticalData.e3
+              ? `${analyticalData.e3.n_observaciones ?? 0} observaciones · ${analyticalData.e3.variables?.length ?? 0} variables`
+              : 'Dato no disponible · análisis pendiente'}
+          </div>
+          {analyticalData.e3?.normalidad_multivariada && (
+            <small className="source-card-note">{analyticalData.e3.normalidad_multivariada.estado}</small>
+          )}
+        </article>
+        <article hidden={!matchesSource('calidad PSP disponibilidad MTBF MTTR linaje cobertura', pipelineData ? 'available' : 'pending')}>
+          <div className="source-icon market"><Database size={22} /></div>
+          <div>
+            <span>CALIDAD PSP</span>
+            <h3>Disponibilidad, MTBF, MTTR y linaje</h3>
+            <a href="/data/observatorio.json" target="_blank" rel="noreferrer">Abrir métricas exportadas</a>
+          </div>
+          <div className={`source-state ${pipelineData?.psp ? '' : 'demo'}`}>
+            <i /> {pipelineData?.psp?.disponibilidad_pct !== undefined
+              ? `Disponibilidad ${pipelineData.psp.disponibilidad_pct}%`
+              : 'Métricas pendientes'}
+          </div>
+          {pipelineData?.psp && (
+            <small className="source-card-note">
+              MTBF: {pipelineData.psp.mtbf_horas ?? 'no disponible'} h ·
+              MTTR: {pipelineData.psp.mttr_segundos ?? 'no disponible'} s ·
+              objetivo: {pipelineData.psp.objetivo_disponibilidad_pct}%.
+            </small>
+          )}
+        </article>
+        <article hidden={!matchesSource('condiciones actuales Open-Meteo Forecast API clima', climateSources.current?.connected ? 'available' : 'pending')}>
           <div className="source-icon weather"><CloudSun size={22} /></div>
           <div>
             <span>CONDICIONES ACTUALES</span>
@@ -1266,7 +1581,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
           </div>
           {climateSources.current?.error && <small className="source-card-error">{climateSources.current.error}</small>}
         </article>
-        <article>
+        <article hidden={!matchesSource('pronostico estacional Open-Meteo ECMWF clima', climateSources.seasonal?.connected ? 'available' : 'pending')}>
           <div className="source-icon weather"><Activity size={22} /></div>
           <div>
             <span>PRONÓSTICO ESTACIONAL</span>
@@ -1278,7 +1593,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
           </div>
           {climateSources.seasonal?.error && <small className="source-card-error">{climateSources.seasonal.error}</small>}
         </article>
-        <article>
+        <article hidden={!matchesSource('historico reanalisis Open-Meteo Historical Weather clima', climateSources.historical?.connected ? 'available' : 'pending')}>
           <div className="source-icon weather"><Activity size={22} /></div>
           <div>
             <span>HISTÓRICO / REANÁLISIS</span>
@@ -1290,7 +1605,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
           </div>
           {climateSources.historical?.error && <small className="source-card-error">{climateSources.historical.error}</small>}
         </article>
-        <article>
+        <article hidden={!matchesSource('rangos agronomicos FAO ECOCROP cultivos', requirements.data ? 'available' : 'pending')}>
           <div className="source-icon weather"><Leaf size={22} /></div>
           <div>
             <span>RANGOS AGRONÓMICOS</span>
@@ -1307,7 +1622,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
           {requirements.error && <small className="source-card-error">{requirements.error}</small>}
           <small className="source-card-note">Sin API conectada se usan rangos ilustrativos locales, no oficiales ni verificados. La puntuación compara temperatura y humedad de Open-Meteo y no certifica aptitud productiva ni rendimiento.</small>
         </article>
-        <article>
+        <article hidden={!matchesSource('ubicaciones mercados OpenStreetMap Overpass geoespacial', mappedMarkets.error ? 'pending' : 'available')}>
           <div className="source-icon market"><MapPin size={22} /></div>
           <div>
             <span>UBICACIONES DE MERCADOS</span>
@@ -1324,7 +1639,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
           {mappedMarkets.error && <small className="source-card-error">{mappedMarkets.error}</small>}
           <small className="source-card-note">Un punto mapeado no confirma un comprador, la compra del cultivo ni sus condiciones. Overpass es una API pública de bajo volumen; su robots.txt indica Disallow: /api/. Antes de un despliegue público, confirma la política y el volumen permitido.</small>
         </article>
-        <article>
+        <article hidden={!matchesSource('conversion referencia Frankfurter MXN USD cambio', exchange.rate ? 'available' : 'pending')}>
           <div className="source-icon market"><Activity size={22} /></div>
           <div>
             <span>CONVERSIÓN DE REFERENCIA</span>
@@ -1340,7 +1655,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
           </div>
           {exchange.error && <small className="source-card-error">{exchange.error}</small>}
         </article>
-        <article>
+        <article hidden={!matchesSource('referencias mayoristas oficiales SNIIM USDA precios mercado', market.connected ? 'available' : 'pending')}>
           <div className="source-icon market"><Activity size={22} /></div>
           <div>
             <span>REFERENCIAS MAYORISTAS OFICIALES</span>
@@ -1356,7 +1671,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
           </div>
           <small className="source-card-note">El catálogo local es ilustrativo y no procede de SNIIM ni USDA. Cotizaciones de API se distinguen de las referencias y no equivalen a ofertas directas al agricultor.</small>
         </article>
-        <article>
+        <article hidden={!matchesSource('precios compradores API mercado', market.connected ? 'available' : 'pending')}>
           <div className="source-icon market"><Activity size={22} /></div>
           <div>
             <span>PRECIOS Y COMPRADORES</span>
@@ -1369,7 +1684,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
               : market.isConfigured ? 'Referencias locales visibles · API sin datos válidos' : 'Referencias locales visibles · API pendiente'}
           </div>
         </article>
-        <article>
+        <article hidden={!matchesSource('rutas trafico casetas TollGuru OSRM', routeResult?.mode === 'api' ? 'available' : 'pending')}>
           <div className="source-icon market"><RouteIcon size={22} /></div>
           <div>
             <span>RUTAS, TRÁFICO Y CASETAS</span>
@@ -1413,7 +1728,7 @@ function SourcesView({ market, climate, requirements, mappedMarkets, exchange, c
               </tr>
             </thead>
             <tbody>
-              {displayPriceRecords.map((record) => (
+              {filteredPriceRecords.map((record) => (
                 <tr key={record.crop} className={`${crop === record.crop ? 'row-active' : ''} ${record.isReferenceOnly ? 'row-reference' : ''}`}>
                   <td><span className="table-crop">{cropIcons[record.crop]}</span><strong>{record.crop}</strong></td>
                   <td>{record.region ?? 'No especificada por la API'}</td>

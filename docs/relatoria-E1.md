@@ -51,23 +51,23 @@ métricas PSP.
 
 La puerta se probó con siete filas dañadas a propósito y las pruebas verifican
 que se cuarenten con motivos. Resultado local de la suite raíz: 74 aprobadas,
-4 omitidas y 83.53 % de cobertura. La disponibilidad de captura en la bitácora
+3 omitidas y 86.75 % de cobertura. La disponibilidad de captura en la bitácora
 es 42/45 (93.3 %), inferior al objetivo PSP de 95 %. No hay evidencia suficiente
 para calcular MTBF o MTTR.
 
-## 4. Análisis estadístico pendiente
+## 4. Análisis estadístico ejecutable
 
-El proyecto plantea en E0 pronosticar precipitación y temperatura para seis
-meses. No se encontró una descomposición temporal ejecutada, pruebas de
-estacionariedad/autocorrelación, cuatro modelos comparados, selección por error
-ni diagnóstico de residuos. Esta brecha permanece abierta; los resultados de
-limpieza no deben presentarse como un pronóstico.
+El proyecto incluye [`laboratorio/e1_series.py`](../laboratorio/e1_series.py):
+descomposición aditiva, ADF, diferenciación, ACF/PACF, correlación cruzada,
+Simple, Holt, Holt-Winters y ARIMA sobre 37 meses reales por municipio. Exporta
+MAE, RMSE, MAPE, Ljung-Box y intervalos aproximados de seis meses. Estas
+métricas no sustituyen validación con estaciones locales.
 
 ## 5. Evidencias
 
 - Notebook de limpieza: [`docs/E1/limpieza.ipynb`](E1/limpieza.ipynb).
 - Pipeline: [`pipeline/`](../pipeline/).
-- Pruebas: [`tests/`](../tests/); ejecución local actual: 74 aprobadas y 4
+- Pruebas: [`tests/`](../tests/); ejecución local actual: 74 aprobadas y 3
   omitidas.
 - Reporte de calidad: [`data/plata/reporte_puerta_calidad.json`](../data/plata/reporte_puerta_calidad.json).
 - Reporte de linaje: [`data/oro/reporte_linaje.json`](../data/oro/reporte_linaje.json).

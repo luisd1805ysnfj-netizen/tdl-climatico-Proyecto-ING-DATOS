@@ -1,0 +1,11 @@
+Fecha,Responsable,FaseInyeccion,FaseDescubrimiento,TipoDefecto,Descripcion,TiempoReparacionMinutos,Estado,Evidencia
+2026-11-09,Luis Alfredo Ruiz Fuentes,Ambiente,Sintaxis,Sintaxis,Ajuste de sintaxis en comando mkdir PowerShell,5,Corregido,Ejecucion local
+2026-11-27,Luis Alfredo Ruiz Fuentes,Requisitos,Planificacion,Requisitos,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Diseno,Revision,Diseno,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Codificacion,Pruebas,Codificacion,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Integracion,Pruebas,Integracion,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Pruebas,Pruebas,Pruebas,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Documentacion,Revision,Documentacion,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Ambiente,Ejecutables,Ambiente,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Datos,Validacion,Datos,Sin defecto nuevo registrado,0,Sin defecto,E0-E4
+2026-11-27,Luis Alfredo Ruiz Fuentes,Interfaz,Revision,Usabilidad,Sin defecto nuevo registrado,0,Sin defecto,E0-E4

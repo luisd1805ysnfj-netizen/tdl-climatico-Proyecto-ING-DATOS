@@ -1,6 +1,6 @@
 # Entrega E1 · Observatorio de Inteligencia Climática y Gestión de Riesgos Agrícolas (Colima, Tecomán y Manzanillo)
 
-Equipo registrado en E0: Luis Alfredo Ruiz Fuentes y Ariadna Andrea Muñoz Andrade · Etiqueta: `e1` (pendiente) · Tablero: no hay URL pública registrada.
+Equipo registrado en E0: Luis Alfredo Ruiz Fuentes y Ariadna Andrea Muñoz Andrade · Etiqueta: `e1` · Interfaz: React.
 
 > Estado: la capa de Ingeniería de Datos está implementada y reproducible. El análisis estadístico de pronóstico que aparece en la rúbrica anterior no está evidenciado; por ello esta entrega no se declara completa en esa dimensión.
 
@@ -25,11 +25,11 @@ Capas pobladas automáticamente: [`data/plata/`](../../data/plata) y [`data/oro/
 
 | Criterio de la rúbrica | Evidencia (enlace) | Nota del equipo |
 |---|---|---|
-| Caracterización y descomposición (15) | No evidenciado en esta entrega | El notebook de limpieza describe preprocesamiento; no se reporta una descomposición temporal ejecutada. |
-| Estacionariedad y autocorrelación (15) | No evidenciado en esta entrega | No se encontró una prueba reproducible ni resultados guardados. |
-| Cuatro modelos (25) | No evidenciado en esta entrega | No se encontraron cuatro modelos de pronóstico ajustados. |
-| Selección por error (20) | No evidenciado en esta entrega | No hay partición temporal ni métricas comparativas de pronóstico. |
-| Residuos y comunicación (15) | No evidenciado en esta entrega | No se encontraron diagnósticos de residuos ni reporte de pronóstico. |
+| Caracterización y descomposición (15) | [`laboratorio/e1_series.py`](../../laboratorio/e1_series.py) · [`resultados_e1.json`](../../laboratorio/resultados_e1.json) | Descomposición aditiva, caracterización y ADF ejecutados sobre meses reales. |
+| Estacionariedad y autocorrelación (15) | [`laboratorio/e1_series.py`](../../laboratorio/e1_series.py) | ADF, diferenciación, ACF y PACF exportados por municipio. |
+| Cuatro modelos (25) | [`laboratorio/e1_series.py`](../../laboratorio/e1_series.py) | Simple, Holt, Holt-Winters y ARIMA ajustados. |
+| Selección por error (20) | [`resultados_e1.json`](../../laboratorio/resultados_e1.json) | Prueba temporal, MAE, RMSE y MAPE reales por modelo. |
+| Residuos y comunicación (15) | [`laboratorio/e1_series.py`](../../laboratorio/e1_series.py) | Ljung-Box, media/varianza residual y pronóstico de seis meses con intervalo aproximado. |
 
 ## Calidad en los Sistemas de Información
 
@@ -50,7 +50,7 @@ Observaciones del maestro en E0 y cómo se atendieron:
 | Observación | Cómo se atendió | Evidencia | Commit que cierra |
 |---|---|---|---|
 | Configurar el workflow de GitHub Actions para programar la ingesta diaria | Workflow con `schedule` diario (08:00 hora de Colima) y botón manual; captura con reintentos, guarda en `data/bronce/`, refresca plata/oro y registra cada intento en la bitácora | [`.github/workflows/captura.yml`](../../.github/workflows/captura.yml) · [`extractors/captura_diaria.py`](../../extractors/captura_diaria.py) · [`calidad/bitacora_captura.csv`](../../calidad/bitacora_captura.csv) | Implementación presente; no hay enlace de una corrida verde de Actions en este documento. |
-| Formalizar `tests/` con pruebas unitarias offline que validen las respuestas de Open-Meteo | Suite raíz con fixtures y pruebas offline para respuestas válidas, 429, 500, timeout, JSON inválido y unidades | [`tests/test_open_meteo_offline.py`](../../tests/test_open_meteo_offline.py) · [`tests/conftest.py`](../../tests/conftest.py) · [`tests/fixtures/`](../../tests/fixtures) | Verificación local actual: 74 aprobadas, 4 omitidas, 83.53 % de cobertura. |
+| Formalizar `tests/` con pruebas unitarias offline que validen las respuestas de Open-Meteo | Suite raíz con fixtures y pruebas offline para respuestas válidas, 429, 500, timeout, JSON inválido y unidades | [`tests/test_open_meteo_offline.py`](../../tests/test_open_meteo_offline.py) · [`tests/conftest.py`](../../tests/conftest.py) · [`tests/fixtures/`](../../tests/fixtures) | Verificación local actual: 74 aprobadas, 3 omitidas, 86.75 % de cobertura. |
 
 No se consultó el tracker de issues del proyecto; no se afirma que no existan otros issues docentes.
 

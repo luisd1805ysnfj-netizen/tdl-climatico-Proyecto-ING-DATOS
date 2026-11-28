@@ -26,6 +26,9 @@ jobs:
       - name: Pruebas con cobertura mínima de 60 %
         run: pytest tests --cov=pipeline --cov-report=term-missing --cov-fail-under=60
 
+      - name: Auditoría de dependencias Python
+        run: pip-audit -r requirements.txt
+
       - name: Puerta de calidad de datos (corre el pipeline sobre bronce)
         run: |
           if ls data/bronce/clima_historico_*.json 1> /dev/null 2>&1; then

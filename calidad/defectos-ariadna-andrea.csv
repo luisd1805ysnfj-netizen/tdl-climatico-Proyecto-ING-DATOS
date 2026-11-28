@@ -1,0 +1,11 @@
+Fecha,Responsable,FaseInyeccion,FaseDescubrimiento,TipoDefecto,Descripcion,TiempoReparacionMinutos,Estado,Evidencia
+2026-11-27,Ariadna Andrea Muñoz Andrade,Requisitos,Planificacion,Requisitos,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Diseno,Revision,Diseno,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Codificacion,Pruebas,Codificacion,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Integracion,Pruebas,Integracion,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Pruebas,Pruebas,Pruebas,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Documentacion,Revision,Documentacion,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Ambiente,Ejecutables,Ambiente,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Datos,Validacion,Datos,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Interfaz,Revision,Usabilidad,Sin registro individual verificable,0,Pendiente,E0-E4
+2026-11-27,Ariadna Andrea Muñoz Andrade,Prevencion,Revision,DefectoPrevencion,Sin registro individual verificable,0,Pendiente,E0-E4

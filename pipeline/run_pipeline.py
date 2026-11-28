@@ -18,7 +18,7 @@ from . import oro
 from . import puerta_calidad as puerta
 
 
-def _contexto_agricola(dir_bronce, dir_plata, dir_oro, dir_cuarentena, dir_tablero, log):
+def _contexto_agricola(dir_bronce, dir_plata, dir_oro, dir_cuarentena, log):
     """Fuente especializada (OpenStreetMap): se integra si hay capturas OSM en bronce."""
     carpeta = Path(dir_bronce or cfg.DIR_BRONCE)
     if not list(carpeta.glob("osm_agricola_*.json")):
@@ -27,17 +27,13 @@ def _contexto_agricola(dir_bronce, dir_plata, dir_oro, dir_cuarentena, dir_table
     if importlib.util.find_spec("geopandas") is None:
         log("[osm] ADVERTENCIA: geopandas no está instalado; capa agrícola omitida (pip install -r requirements.txt)")
         return None
-    from . import geoespacial, mapa
+    from . import geoespacial
 
     res = geoespacial.procesar(dir_bronce, dir_plata, dir_oro, dir_cuarentena, log=log)
-    ruta = mapa.construir_mapa(res["parcelas"], res["contexto"], res["centros"],
-                               Path(dir_tablero or cfg.RAIZ / "tablero") / "mapa_agricola.html")
-    log(f"[osm] mapa escrito en {ruta}")
+    log("[osm] contexto geoespacial disponible para React")
     return res
 
-
-def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None, verbose=True,
-             dir_tablero=None):
+def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None, verbose=True):
     dir_plata = dir_plata or cfg.DIR_PLATA
     dir_oro = dir_oro or cfg.DIR_ORO
     dir_cuarentena = dir_cuarentena or cfg.DIR_CUARENTENA
@@ -71,7 +67,7 @@ def ejecutar(dir_bronce=None, dir_plata=None, dir_oro=None, dir_cuarentena=None,
     log(f"[plata] {len(plata)} filas · {int(plata['atipico_cualquiera'].sum())} marcadas como atípicas")
 
     # 4) Fuente especializada geoespacial (OpenStreetMap), si hay capturas en bronce
-    osm = _contexto_agricola(dir_bronce, dir_plata, dir_oro, dir_cuarentena, dir_tablero, log)
+    osm = _contexto_agricola(dir_bronce, dir_plata, dir_oro, dir_cuarentena, log)
 
     # 5) Oro: escalado, discretización, jerarquías, linaje y reducción
     params = lim.ajustar_escalado(plata)

@@ -39,7 +39,6 @@ result = ejecutar(
     dir_plata=output / "plata",
     dir_oro=output / "oro",
     dir_cuarentena=output / "cuarentena",
-    dir_tablero=output / "tablero",
     verbose=False,
 )
 elapsed = perf_counter() - start
